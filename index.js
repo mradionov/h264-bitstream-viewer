@@ -138,7 +138,7 @@ function createUnit(dataWithStartCode) {
   return unit;
 }
 
-function readSEI(reader, unit) {
+function read(reader, unit) {
   const unitData32 = new Int32Array(unit.data);
 
   const numBytes = unitData32.length * unitData32.BYTES_PER_ELEMENT;
@@ -147,7 +147,7 @@ function readSEI(reader, unit) {
   const heapBytes = new Uint8Array(Module.HEAPU8.buffer, ptr, numBytes);
   heapBytes.set(new Uint8Array(unitData32.buffer));
 
-  const ret = reader.readSEI(ptr, unitData32.length);
+  const ret = reader.read(ptr, unitData32.length);
 
   Module._free(ptr);
 
@@ -165,7 +165,7 @@ function createRow(index, unit) {
     const unit = state.units[index];
 
     const reader = new Module.Reader();
-    const text = readSEI(reader, unit);
+    const text = read(reader, unit);
     renderDetails(text);
   });
   return row;
@@ -178,7 +178,15 @@ function createCell(text) {
 }
 
 function renderDetails(text) {
-  $details.innerHTML = text.replace(/\n/g, '<br />');
+  const formattedText = text.split('\n').map((line) => {
+    const match = line.match(/^\s+/);
+    if (match) {
+      return '&nbsp;&nbsp;'.repeat(match[0].length) + line.substring(match[0].length);
+    }
+    return line;
+  }).join('<br />');
+
+  $details.innerHTML = formattedText;
 }
 
 function getDisplayedType(type) {
