@@ -1,0 +1,11 @@
+.container {
+  display: flex;
+}
+
+.list {
+  flex: 1;
+}
+
+.details {
+  flex: 1;
+}

@@ -1,19 +1,6 @@
-const fileInput = document.querySelector('[data-file-input');
-
-fileInput.addEventListener('change', () => {
-  const files = fileInput.files;
-  const file = files[0];
-
-  const reader = new FileReader();
-
-  reader.addEventListener('load', (ev) => {
-    parse(ev.target.result);
-  });
-  reader.readAsArrayBuffer(file);
-});
-
-const unitsContainer = document.querySelector('[data-units-container]');
-
+const $fileInput = document.querySelector('[data-file-input');
+const $unitsContainer = document.querySelector('[data-units-container]');
+const $details = document.querySelector('[data-details]');
 
 const NAL_UNIT_TYPES = {
   UNSPECIFIED: 0,
@@ -40,11 +27,29 @@ const NAL_UNIT_TYPES = {
   // 24..31 unspecified
 };
 
-function parse(buffer) {
+const state = {
+  units: [],
+};
 
+
+$fileInput.addEventListener('change', () => {
+  const files = $fileInput.files;
+  const file = files[0];
+
+  const reader = new FileReader();
+
+  state.units = [];
+
+  reader.addEventListener('load', (ev) => {
+    parse(ev.target.result);
+  });
+  reader.readAsArrayBuffer(file);
+});
+
+
+function parse(buffer) {
   const data = new Uint8Array(buffer);
 
-  const units = [];
   let offset = 0;
 
   // Cut off leading zero bytes
@@ -67,8 +72,8 @@ function parse(buffer) {
       && data[offset + 2] === 0
       && lastOffset !== null
     ) {
-      const unitData = data.subarray(lastOffset + 3, offset);
-      units.push(createUnit(unitData));
+      const unitData = data.subarray(lastOffset, offset);
+      state.units.push(createUnit(unitData));
       lastOffset = null;
     }
 
@@ -77,8 +82,8 @@ function parse(buffer) {
       && data[offset + 2] === 1
     ) {
       if (lastOffset !== null) {
-        const unitData = data.subarray(lastOffset + 3, offset);
-        units.push(createUnit(unitData));
+        const unitData = data.subarray(lastOffset, offset);
+        state.units.push(createUnit(unitData));
       }
 
       lastOffset = offset;
@@ -87,8 +92,8 @@ function parse(buffer) {
     if (offset === data.length - 1
       && lastOffset !== null
     ) {
-      const unitData = data.subarray(lastOffset + 3, data.length);
-      units.push(createUnit(unitData));
+      const unitData = data.subarray(lastOffset, data.length);
+      state.units.push(createUnit(unitData));
     }
 
     // Cut off four-byte start-code sequence (convert it to three-bytes start
@@ -108,15 +113,16 @@ function parse(buffer) {
     }
   }
 
-  console.log(units);
+  console.log(state.units);
 
-  units.forEach((unit, index) => {
+  state.units.slice(0, 100).forEach((unit, index) => {
     const row = createRow(index, unit);
-    unitsContainer.appendChild(row);
+    $unitsContainer.appendChild(row);
   });
 }
 
-function createUnit(data) {
+function createUnit(dataWithStartCode) {
+  const data = dataWithStartCode.slice(3);
   const header = data[0];
   const forbiddenZeroBit = header >> 7;
   const refIdc = (header >> 5) & 0x3;
@@ -132,7 +138,7 @@ function createUnit(data) {
   return unit;
 }
 
-function readUnitShort(reader, unit) {
+function readSEI(reader, unit) {
   const unitData32 = new Int32Array(unit.data);
 
   const numBytes = unitData32.length * unitData32.BYTES_PER_ELEMENT;
@@ -141,11 +147,11 @@ function readUnitShort(reader, unit) {
   const heapBytes = new Uint8Array(Module.HEAPU8.buffer, ptr, numBytes);
   heapBytes.set(new Uint8Array(unitData32.buffer));
 
-  const unitShort = reader.readShort(ptr, unitData32.length);
+  const ret = reader.readSEI(ptr, unitData32.length);
 
   Module._free(ptr);
 
-  return unitShort;
+  return ret;
 }
 
 function createRow(index, unit) {
@@ -155,6 +161,13 @@ function createRow(index, unit) {
   row.appendChild(createCell(getDisplayedType(unit.type)));
   row.appendChild(createCell(unit.refIdc));
   row.appendChild(createCell(unit.forbiddenZeroBit));
+  row.addEventListener('click', () => {
+    const unit = state.units[index];
+
+    const reader = new Module.Reader();
+    const text = readSEI(reader, unit);
+    renderDetails(text);
+  });
   return row;
 }
 
@@ -162,6 +175,10 @@ function createCell(text) {
   const cell = document.createElement('td');
   cell.innerHTML = text;
   return cell;
+}
+
+function renderDetails(text) {
+  $details.innerHTML = text.replace(/\n/g, '<br />');
 }
 
 function getDisplayedType(type) {

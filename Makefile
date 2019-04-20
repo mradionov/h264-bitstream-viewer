@@ -11,4 +11,8 @@ dist/h264bitstream.js: h264bitstream-wrapper.cpp h264bitstream/.libs/libh264bits
 h264bitstream/.libs/libh264bitstream.so.0.0.0:
 	cd h264bitstream \
 		&& emconfigure ./configure \
-		&& emmake make
+		&& emmake make CFLAGS=-DHAVE_SEI
+
+clean:
+	cd h264bitstream \
+		&& make clean
