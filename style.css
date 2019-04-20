@@ -1,11 +1,53 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
 .container {
   display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.header {
+  padding: 10px 0;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
 }
 
 .list {
   flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 .details {
   flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 20px;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+tbody tr:hover {
+  background: #eee;
+  cursor: pointer;
+}
+
+th, td {
+  padding: 5px;
 }
