@@ -113,9 +113,7 @@ function parse(buffer) {
     }
   }
 
-  console.log(state.units);
-
-  state.units.slice(0, 100).forEach((unit, index) => {
+  state.units.forEach((unit, index) => {
     const row = createRow(index, unit);
     $unitsContainer.appendChild(row);
   });

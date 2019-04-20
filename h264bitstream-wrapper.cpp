@@ -398,13 +398,13 @@ struct Reader {
 
     int ret = read_nal_unit(h, buf, size);
 
-    cout << "ret = " << ret << endl;
+    // cout << "ret = " << ret << endl;
 
     stringstream ss;
 
     print_nal(ss, h, h->nal);
 
-    cout << ss.str() << endl;
+    // cout << ss.str() << endl;
 
     h264_free(h);
 
