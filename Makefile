@@ -1,4 +1,4 @@
-dist/h264bitstream.js: h264bitstream-wrapper.cpp h264bitstream/.libs/libh264bitstream.so.0.0.0
+public/dist/h264bitstream.js: h264bitstream-wrapper.cpp h264bitstream/.libs/libh264bitstream.so.0.0.0
 	emcc \
 		--bind \
 		-O2  \
