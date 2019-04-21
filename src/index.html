@@ -1,26 +1,18 @@
-<link rel="stylesheet" href="style.css">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>h264-bitstream-viewer</title>
+  </head>
+  <body>
+    <!-- App mount point -->
+    <div data-app></div>
 
-<div class="container">
-  <div class="header">
-    File:
-    <input type="file" data-file-input />
-  </div>
-  <div class="content">
-    <div class="list">
-      <table>
-        <thead>
-          <th>#</th>
-          <th colspan="2">Unit type</th>
-          <th>Reference idc</th>
-          <th>Forbidden zero bit</th>
-        </thead>
-        <tbody data-units-container></tbody>
-      </table>
-    </div>
-    <div class="details" data-details>
-    </div>
-  </div>
-</div>
+    <script src="h264bitstream.js"></script>
 
-<script src="h264bitstream.js"></script>
-<script src="index.js" type="module"></script>
+    <!--
+      Webpack automatically includes all assets and the app itself.
+      Check Webpack config for details.
+    -->
+  </body>
+</html>

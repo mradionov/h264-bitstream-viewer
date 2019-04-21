@@ -16,13 +16,10 @@ h264bitstream/.libs/libh264bitstream.so.0.0.0:
 
 .PHONY: all clean deploy
 
-all: dist dist_static
+all: dist
 
 dist:
 	git worktree add dist gh-pages
-
-dist_static: src/index.html src/index.js src/style.css
-	cp -t dist/ $?
 
 dist_clean:
 	rm dist/*
