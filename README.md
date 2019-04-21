@@ -1,6 +1,12 @@
 h264-bitstream-viewer
 ===
 
+## Dependencies
+
+```bash
+git submodule update --init --recursive
+```
+
 ## Build
 
 ```bash
