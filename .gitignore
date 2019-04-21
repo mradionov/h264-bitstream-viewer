@@ -1,1 +1,2 @@
-public/dist/
+dist/*
+!dist/.gitkeep
