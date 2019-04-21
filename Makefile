@@ -9,11 +9,16 @@ dist/h264bitstream.js: src/h264bitstream-wrapper.cpp h264bitstream/.libs/libh264
 		$^
 
 h264bitstream/.libs/libh264bitstream.so.0.0.0:
-	cd h264bitstream \
-		&& emconfigure ./configure \
-		&& emmake make CFLAGS=-DHAVE_SEI
+	cd h264bitstream && \
+ 		emconfigure ./configure && \
+		emmake make CFLAGS=-DHAVE_SEI
 
-.PHONY: build clean dist_static dist_clean deploy
+.PHONY: all clean deploy
+
+all: dist dist_static
+
+dist:
+	git worktree add dist gh-pages
 
 dist_static: src/index.html src/index.js src/style.css
 	cp -t dist/ $?
@@ -21,11 +26,12 @@ dist_static: src/index.html src/index.js src/style.css
 dist_clean:
 	rm dist/*
 
-build: dist_static dist/h264bitstream.js
-
 clean:
-	cd h264bitstream \
-		&& make clean
+	cd h264bitstream && \
+		make clean
 
-deploy:
-	git subtree push --prefix dist origin gh-pages
+deploy: all
+	cd dist && \
+		git add --all && \
+		git commit -m "Deploy gh-pages" && \
+		git push origin gh-pages
