@@ -10,6 +10,7 @@ dist/h264bitstream.js: src/h264bitstream-wrapper.cpp h264bitstream/.libs/libh264
 
 h264bitstream/.libs/libh264bitstream.so.0.0.0:
 	cd h264bitstream && \
+		autoreconf -i && \
  		emconfigure ./configure && \
 		emmake make CFLAGS=-DHAVE_SEI
 
