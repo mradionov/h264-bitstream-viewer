@@ -3,11 +3,13 @@ const path = require('path');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
-const rootDir = path.join(__dirname, '..');
+const rootDir = path.join(__dirname);
 
 const config = {
   mode: 'development',
-  entry: path.join(rootDir, 'src/main.js'),
+  entry: {
+    main: path.join(rootDir, 'src/main.js'),
+  },
   module: {
     rules: [
       {
@@ -47,8 +49,8 @@ const config = {
     new VueLoaderPlugin(),
   ],
   resolve: {
-    extensions: ['.js', '.json', '.vue'],
+    extensions: ['.js', '.vue', '.json'],
   },
-}
+};
 
 module.exports = config;

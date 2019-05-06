@@ -1,7 +1,6 @@
 import { NAL_UNIT_TYPES } from '../constants';
 
 const nalHelper = {
-
   nalTypeDisplayed(type) {
     switch (type) {
       case NAL_UNIT_TYPES.UNSPECIFIED:
@@ -46,7 +45,6 @@ const nalHelper = {
         return 'Unknown';
     }
   },
-
 };
 
 export default nalHelper;
