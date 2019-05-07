@@ -345,35 +345,6 @@ void print_seis(stringstream &ts, h264_stream_t* h) {
 
 void print_nal(stringstream &ts, h264_stream_t* h, nal_t* nal)
 {
-    ts << "==================== NAL ====================\n";
-    ts << " forbidden_zero_bit :" << nal->forbidden_zero_bit << "\n";
-    ts << " nal_ref_idc :" << nal->nal_ref_idc << "\n";
-    // TODO make into subroutine
-    const char* nal_unit_type_name;
-    switch (nal->nal_unit_type)
-    {
-    case  NAL_UNIT_TYPE_UNSPECIFIED :                   nal_unit_type_name = "Unspecified"; break;
-    case  NAL_UNIT_TYPE_CODED_SLICE_NON_IDR :           nal_unit_type_name = "Coded slice of a non-IDR picture"; break;
-    case  NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_A :  nal_unit_type_name = "Coded slice data partition A"; break;
-    case  NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_B :  nal_unit_type_name = "Coded slice data partition B"; break;
-    case  NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_C :  nal_unit_type_name = "Coded slice data partition C"; break;
-    case  NAL_UNIT_TYPE_CODED_SLICE_IDR :               nal_unit_type_name = "Coded slice of an IDR picture"; break;
-    case  NAL_UNIT_TYPE_SEI :                           nal_unit_type_name = "Supplemental enhancement information (SEI)"; break;
-    case  NAL_UNIT_TYPE_SPS :                           nal_unit_type_name = "Sequence parameter set"; break;
-    case  NAL_UNIT_TYPE_PPS :                           nal_unit_type_name = "Picture parameter set"; break;
-    case  NAL_UNIT_TYPE_AUD :                           nal_unit_type_name = "Access unit delimiter"; break;
-    case  NAL_UNIT_TYPE_END_OF_SEQUENCE :               nal_unit_type_name = "End of sequence"; break;
-    case  NAL_UNIT_TYPE_END_OF_STREAM :                 nal_unit_type_name = "End of stream"; break;
-    case  NAL_UNIT_TYPE_FILLER :                        nal_unit_type_name = "Filler data"; break;
-    case  NAL_UNIT_TYPE_SPS_EXT :                       nal_unit_type_name = "Sequence parameter set extension"; break;
-        // 14..18    // Reserved
-    case  NAL_UNIT_TYPE_CODED_SLICE_AUX :               nal_unit_type_name = "Coded slice of an auxiliary coded picture without partitioning"; break;
-        // 20..23    // Reserved
-        // 24..31    // Unspecified
-    default :                                           nal_unit_type_name = "Unknown"; break;
-    }
-    ts << " nal_unit_type : " << nal->nal_unit_type << " " << nal_unit_type_name <<"\n";
-
     if( nal->nal_unit_type == NAL_UNIT_TYPE_CODED_SLICE_NON_IDR) { print_slice_header(ts, h->sh); }
     else if( nal->nal_unit_type == NAL_UNIT_TYPE_CODED_SLICE_IDR) { print_slice_header(ts, h->sh); }
     else if( nal->nal_unit_type == NAL_UNIT_TYPE_SPS) { print_sps(ts, h->sps); }

@@ -79,7 +79,7 @@ export default {
     },
     perPageOptions: {
       type: Array,
-      default: () => [20, 30, 50, 100],
+      default: () => [1, 20, 30, 50, 100],
     },
     totalPages: {
       type: Number,

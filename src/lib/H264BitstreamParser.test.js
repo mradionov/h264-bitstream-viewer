@@ -80,6 +80,16 @@ test('findUnit: two units, second one with 4-byte start-codes', (t) => {
   t.deepEqual(result2, { start: 6, end: 11, size: 6 });
 });
 
+test('findUnit: two units, all with 4-byte start-codes', (t) => {
+  const data = new Uint8Array([0, 0, 0, 1, 5, 6, 0, 0, 0, 1, 7, 8, 9]);
+
+  const result1 = H264BitstreamParser.findUnit(data, 0);
+  const result2 = H264BitstreamParser.findUnit(data, 5);
+
+  t.deepEqual(result1, { start: 1, end: 5, size: 5 });
+  t.deepEqual(result2, { start: 7, end: 12, size: 6 });
+});
+
 test('readUnitHeader: empty data', (t) => {
   const header = H264BitstreamParser.readUnitHeader(new Uint8Array([]));
 

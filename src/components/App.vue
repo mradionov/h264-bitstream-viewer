@@ -12,6 +12,7 @@
         <div :class="$style.scrollable">
           <UnitHeaderList
             :indexOffset="indexOffset"
+            :selectedIndex="selectedIndex"
             :unitHeaders="unitHeaders"
             @select="handleUnitHeaderSelect"
           />
@@ -25,15 +26,30 @@
           @perPageChange="handlePerPageChange"
         />
       </div>
-      <div :class="$style.details" v-html="formattedDetails" />
+      <div :class="$style.details">
+        <UiTabs v-if="hasDetails">
+          <UiTab title="NAL">
+            <TabUnit
+              :number="this.selectedNumber"
+              :range="selectedRange"
+              :unitHeader="selectedUnitHeader"
+            />
+          </UiTab>
+          <UiTab title="Details">
+            <TabDetails :details="details" />
+          </UiTab>
+        </UiTabs>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { UiFileupload, UiProgressCircular } from 'keen-ui';
+import { UiFileupload, UiProgressCircular, UiTabs, UiTab } from 'keen-ui';
 
 import Pagination from './Pagination';
+import TabDetails from './TabDetails';
+import TabUnit from './TabUnit';
 import UnitHeaderList from './UnitHeaderList';
 
 import FileChunkReader from '../lib/FileChunkReader';
@@ -45,8 +61,12 @@ export default {
   components: {
     UiFileupload,
     UiProgressCircular,
+    UiTabs,
+    UiTab,
 
     Pagination,
+    TabDetails,
+    TabUnit,
     UnitHeaderList,
   },
 
@@ -54,6 +74,8 @@ export default {
     return {
       isLoading: false,
       lastLoadedOffset: 0,
+      selectedIndex: -1,
+      selectedUnitHeader: null,
       details: null,
       currentPage: 1,
       perPage: 30,
@@ -78,36 +100,81 @@ export default {
 
       return progress;
     },
+    hasDetails() {
+      return this.details !== null;
+    },
     indexOffset() {
       return (this.currentPage - 1) * this.perPage;
     },
     totalPages() {
       return Math.ceil(this.ranges.length / this.perPage);
     },
-    formattedDetails() {
-      if (this.details === null) {
-        return '';
+    selectedNumber() {
+      if (this.selectedIndex === -1) {
+        return -1;
+      }
+      return this.selectedIndex + 1;
+    },
+    selectedRange() {
+      const noRange = {
+        start: -1,
+        end: -1,
+        size: 0,
+      };
+
+      const selectedRange = this.ranges[this.selectedIndex];
+      if (selectedRange === undefined) {
+        return noRange;
       }
 
-      const formattedText = this.details
-        .split('\n')
-        .map((line) => {
-          const match = line.match(/^\s+/);
-          if (match) {
-            const space = '&nbsp;&nbsp;';
-            return (
-              space.repeat(match[0].length) + line.substring(match[0].length)
-            );
-          }
-          return line;
-        })
-        .join('<br />');
-
-      return formattedText;
+      return selectedRange;
     },
   },
 
   methods: {
+    async loadPage() {
+      const pageStart = (this.currentPage - 1) * this.perPage;
+      const pageEnd = pageStart + this.perPage;
+
+      const pageRanges = this.ranges.slice(pageStart, pageEnd);
+      if (pageRanges.length === 0) {
+        return;
+      }
+
+      const start = pageRanges[0].start;
+      const end = pageRanges[pageRanges.length - 1].end;
+
+      const chunkReader = new FileChunkReader(this.file);
+      const buffer = await chunkReader.readAsArrayBuffer(start, end);
+      const data = new Uint8Array(buffer);
+
+      const unitHeaders = pageRanges.map((range) => {
+        const offset = range.start - start;
+
+        const unitHeader = H264BitstreamParser.readUnitHeader(data, offset);
+
+        return unitHeader;
+      });
+
+      this.unitHeaders = unitHeaders;
+    },
+
+    read(reader, data) {
+      const unitData32 = new Int32Array(data);
+
+      const numBytes = unitData32.length * unitData32.BYTES_PER_ELEMENT;
+      const ptr = Module._malloc(numBytes);
+
+      const heapBytes = new Uint8Array(Module.HEAPU8.buffer, ptr, numBytes);
+      heapBytes.set(new Uint8Array(unitData32.buffer));
+
+      const ret = reader.read(ptr, unitData32.length);
+
+      Module._free(ptr);
+
+      return ret;
+    },
+
     handleFile(files) {
       if (files.length === 0) {
         return;
@@ -122,7 +189,7 @@ export default {
 
       const offsetStream = new H264BitstreamOffsetStream();
 
-      offsetStream.addEventListener('data', (range) => {
+      offsetStream.addEventListener('data', async (range) => {
         this.lastLoadedOffset = range.end;
         ranges.push(range);
       });
@@ -157,56 +224,15 @@ export default {
       this.loadPage();
     },
 
-    async loadPage() {
-      const pageStart = (this.currentPage - 1) * this.perPage;
-      const pageEnd = pageStart + this.perPage;
-
-      const pageRanges = this.ranges.slice(pageStart, pageEnd);
-      if (pageRanges.length === 0) {
-        return;
-      }
-
-      const start = pageRanges[0].start;
-      const end = pageRanges[pageRanges.length - 1].end;
-
-      const chunkReader = new FileChunkReader(this.file);
-      const buffer = await chunkReader.readAsArrayBuffer(start, end);
-      const data = new Uint8Array(buffer);
-
-      const unitHeaders = pageRanges.map((range) => {
-        const offset = range.start - start;
-
-        const unitHeader = H264BitstreamParser.readUnitHeader(data, offset);
-
-        return unitHeader;
-      });
-
-      this.unitHeaders = unitHeaders;
-    },
-
-    createUnit(index, dataWithStartCode) {
-      const data = dataWithStartCode.slice(3);
-      const header = data[0];
-      const forbiddenZeroBit = header >> 7;
-      const refIdc = (header >> 5) & 0x3;
-      const type = header & 0x1f;
-
-      const unit = {
-        index,
-        data,
-        forbiddenZeroBit,
-        refIdc,
-        type,
-      };
-
-      return unit;
-    },
-
     async handleUnitHeaderSelect(unitHeader, index) {
+      this.selectedUnitHeader = unitHeader;
+
       const range = this.ranges[index];
       if (range === undefined) {
         return;
       }
+
+      this.selectedIndex = index;
 
       const chunkReader = new FileChunkReader(this.file);
       const buffer = await chunkReader.readAsArrayBuffer(
@@ -221,22 +247,6 @@ export default {
       const text = this.read(reader, dataNoStartCode);
 
       this.details = text;
-    },
-
-    read(reader, data) {
-      const unitData32 = new Int32Array(data);
-
-      const numBytes = unitData32.length * unitData32.BYTES_PER_ELEMENT;
-      const ptr = Module._malloc(numBytes);
-
-      const heapBytes = new Uint8Array(Module.HEAPU8.buffer, ptr, numBytes);
-      heapBytes.set(new Uint8Array(unitData32.buffer));
-
-      const ret = reader.read(ptr, unitData32.length);
-
-      Module._free(ptr);
-
-      return ret;
     },
   },
 };
