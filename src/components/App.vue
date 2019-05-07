@@ -74,17 +74,19 @@ export default {
     return {
       isLoading: false,
       lastLoadedOffset: 0,
+      totalRanges: 0,
       selectedIndex: -1,
       selectedUnitHeader: null,
       details: null,
       currentPage: 1,
       perPage: 30,
-      ranges: [],
       unitHeaders: [],
     };
   },
 
+  // https://github.com/vuejs/vue/issues/1988
   file: null,
+  ranges: [],
 
   computed: {
     progress() {
@@ -92,11 +94,11 @@ export default {
         return 0;
       }
 
-      if (!this.file) {
+      if (!this.$options.file) {
         return 0;
       }
 
-      const progress = (this.lastLoadedOffset / this.file.size) * 100;
+      const progress = (this.lastLoadedOffset / this.$options.file.size) * 100;
 
       return progress;
     },
@@ -107,7 +109,7 @@ export default {
       return (this.currentPage - 1) * this.perPage;
     },
     totalPages() {
-      return Math.ceil(this.ranges.length / this.perPage);
+      return Math.ceil(this.totalRanges / this.perPage);
     },
     selectedNumber() {
       if (this.selectedIndex === -1) {
@@ -122,7 +124,7 @@ export default {
         size: 0,
       };
 
-      const selectedRange = this.ranges[this.selectedIndex];
+      const selectedRange = this.$options.ranges[this.selectedIndex];
       if (selectedRange === undefined) {
         return noRange;
       }
@@ -132,11 +134,87 @@ export default {
   },
 
   methods: {
+    handleFile(files) {
+      if (files.length === 0) {
+        return;
+      }
+
+      const file = files[0];
+
+      this.$options.file = file;
+
+      this.isLoading = true;
+
+      const ranges = [];
+
+      const offsetStream = new H264BitstreamOffsetStream();
+
+      offsetStream.addEventListener('data', async (range) => {
+        this.lastLoadedOffset = range.end;
+        ranges.push(range);
+      });
+
+      offsetStream.addEventListener('end', async () => {
+        this.$options.ranges = ranges;
+        this.totalRanges = ranges.length;
+        this.isLoading = false;
+
+        this.loadPage();
+      });
+
+      const fileStream = new FileReadStream(this.$options.file);
+
+      fileStream.addEventListener('data', (chunkBuffer) => {
+        offsetStream.appendData(new Uint8Array(chunkBuffer));
+      });
+
+      fileStream.addEventListener('end', () => {
+        offsetStream.finish();
+      });
+
+      fileStream.start();
+    },
+
+    handlePageChange(nextPage) {
+      this.currentPage = nextPage;
+      this.loadPage();
+    },
+
+    handlePerPageChange(perPage) {
+      this.perPage = perPage;
+      this.loadPage();
+    },
+
+    async handleUnitHeaderSelect(unitHeader, index) {
+      this.selectedUnitHeader = unitHeader;
+
+      const range = this.$options.ranges[index];
+      if (range === undefined) {
+        return;
+      }
+
+      this.selectedIndex = index;
+
+      const chunkReader = new FileChunkReader(this.$options.file);
+      const buffer = await chunkReader.readAsArrayBuffer(
+        range.start,
+        range.end,
+      );
+      const data = new Uint8Array(buffer);
+
+      const dataNoStartCode = data.slice(3);
+
+      const reader = new window.Module.Reader();
+      const text = this.read(reader, dataNoStartCode);
+
+      this.details = text;
+    },
+
     async loadPage() {
       const pageStart = (this.currentPage - 1) * this.perPage;
       const pageEnd = pageStart + this.perPage;
 
-      const pageRanges = this.ranges.slice(pageStart, pageEnd);
+      const pageRanges = this.$options.ranges.slice(pageStart, pageEnd);
       if (pageRanges.length === 0) {
         return;
       }
@@ -144,7 +222,7 @@ export default {
       const start = pageRanges[0].start;
       const end = pageRanges[pageRanges.length - 1].end;
 
-      const chunkReader = new FileChunkReader(this.file);
+      const chunkReader = new FileChunkReader(this.$options.file);
       const buffer = await chunkReader.readAsArrayBuffer(start, end);
       const data = new Uint8Array(buffer);
 
@@ -173,80 +251,6 @@ export default {
       Module._free(ptr);
 
       return ret;
-    },
-
-    handleFile(files) {
-      if (files.length === 0) {
-        return;
-      }
-
-      const file = files[0];
-      this.file = file;
-
-      this.isLoading = true;
-
-      const ranges = [];
-
-      const offsetStream = new H264BitstreamOffsetStream();
-
-      offsetStream.addEventListener('data', async (range) => {
-        this.lastLoadedOffset = range.end;
-        ranges.push(range);
-      });
-
-      offsetStream.addEventListener('end', async () => {
-        this.ranges = ranges;
-        this.isLoading = false;
-
-        this.loadPage();
-      });
-
-      const fileStream = new FileReadStream(file);
-
-      fileStream.addEventListener('data', (chunkBuffer) => {
-        offsetStream.appendData(new Uint8Array(chunkBuffer));
-      });
-
-      fileStream.addEventListener('end', () => {
-        offsetStream.finish();
-      });
-
-      fileStream.start();
-    },
-
-    handlePageChange(nextPage) {
-      this.currentPage = nextPage;
-      this.loadPage();
-    },
-
-    handlePerPageChange(perPage) {
-      this.perPage = perPage;
-      this.loadPage();
-    },
-
-    async handleUnitHeaderSelect(unitHeader, index) {
-      this.selectedUnitHeader = unitHeader;
-
-      const range = this.ranges[index];
-      if (range === undefined) {
-        return;
-      }
-
-      this.selectedIndex = index;
-
-      const chunkReader = new FileChunkReader(this.file);
-      const buffer = await chunkReader.readAsArrayBuffer(
-        range.start,
-        range.end,
-      );
-      const data = new Uint8Array(buffer);
-
-      const dataNoStartCode = data.slice(3);
-
-      const reader = new window.Module.Reader();
-      const text = this.read(reader, dataNoStartCode);
-
-      this.details = text;
     },
   },
 };

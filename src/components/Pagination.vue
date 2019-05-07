@@ -22,14 +22,14 @@
       title="First page"
       @click="handleFirstClick"
     >
-      <<
+      &lt;&lt;
     </div>
     <div
       :class="[$style.button, (!hasPages || isFirst) && $style.disabled]"
       title="Prev page"
       @click="handlePrevClick"
     >
-      <
+      &lt;
     </div>
 
     <div :class="$style.page">
@@ -47,14 +47,14 @@
       title="Next page"
       @click="handleNextClick"
     >
-      >
+      &gt;
     </div>
     <div
       :class="[$style.button, (!hasPages || isLast) && $style.disabled]"
       title="Last page"
       @click="handleLastClick"
     >
-      >>
+      &gt;&gt;
     </div>
 
     <div
