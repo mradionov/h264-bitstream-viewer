@@ -134,16 +134,32 @@ export default {
   },
 
   methods: {
+    reset() {
+      this.$options.file = null;
+      this.$options.ranges = [];
+
+      this.isLoading = false;
+
+      this.lastLoadedOffset = 0;
+      this.totalRanges = 0;
+      this.selectedIndex = -1;
+      this.selectedUnitHeader = null;
+      this.details = null;
+      this.currentPage = 1;
+      this.unitHeaders = [];
+    },
+
     handleFile(files) {
+      this.reset();
+
       if (files.length === 0) {
         return;
       }
 
       const file = files[0];
 
-      this.$options.file = file;
-
       this.isLoading = true;
+      this.$options.file = file;
 
       const ranges = [];
 
