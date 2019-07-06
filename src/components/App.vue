@@ -1,10 +1,19 @@
 <template>
   <div :class="$style.container">
     <div :class="$style.header">
-      <UiFileupload name="file" @change="handleFile" />
-      <div v-if="isLoading" :class="$style.loading">
-        <UiProgressCircular :progress="progress" type="determinate" />
-        <span :class="$style.loadingText">Loading ...</span>
+      <div :class="$style.upload">
+        <UiFileupload name="file" @change="handleFile" />
+        <div v-if="isLoading" :class="$style.loading">
+          <UiProgressCircular :progress="progress" type="determinate" />
+          <span :class="$style.loadingText">Loading ...</span>
+        </div>
+      </div>
+      <div :class="$style.about">
+        H264 Bitstream Viewer
+        <span :class="$style.separator">|</span>
+        <Link to="https://github.com/mradionov/h264-bitstream-viewer">
+          GitHub
+        </Link>
       </div>
     </div>
     <div :class="$style.content">
@@ -47,6 +56,7 @@
 <script>
 import { UiFileupload, UiProgressCircular, UiTabs, UiTab } from 'keen-ui';
 
+import Link from './Link';
 import Pagination from './Pagination';
 import TabDetails from './TabDetails';
 import TabUnit from './TabUnit';
@@ -64,6 +74,7 @@ export default {
     UiTabs,
     UiTab,
 
+    Link,
     Pagination,
     TabDetails,
     TabUnit,
@@ -283,6 +294,19 @@ export default {
 .header {
   display: flex;
   padding: 10px 0;
+}
+
+.upload {
+  flex: 1;
+}
+
+.about {
+  color: #555;
+}
+
+.separator {
+  color: #aaa;
+  margin: 0 10px;
 }
 
 .content {
