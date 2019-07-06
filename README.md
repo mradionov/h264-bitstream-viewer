@@ -2,12 +2,12 @@
 
 ## Prerequisites
 
-- Docker - for building WASM version of [h264bitstream](h264bitstream)
+- Docker - for building WASM version of [h264bitstream][h264bitstream]
 - Node.js, npm - for building Frontend Application
 
 ## Dependencies
 
-Fetches [h264bitstream](h264bitstream) as a submodule:
+Fetches [h264bitstream][h264bitstream] as a submodule:
 
 ```bash
 $ git submodule update --init --recursive
