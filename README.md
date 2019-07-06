@@ -1,4 +1,4 @@
-# h264-bitstream-viewer
+# h264-bitstream-viewer [![Build status](https://travis-ci.com/mradionov/h264-bitstream-viewer.svg?branch=master)](https://travis-ci.com/mradionov/h264-bitstream-viewer)
 
 > Web UI on top of [h264bitstream][h264bitstream], inspired by [H264Naked][h264naked], to display information about NAL units of H264 bitstream.
 
