@@ -297,6 +297,7 @@ export default {
 }
 
 .upload {
+  display: flex;
   flex: 1;
 }
 
