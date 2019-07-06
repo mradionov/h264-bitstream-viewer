@@ -12,6 +12,17 @@ branches:
     # Will be deployed to, no need to build it
     - gh-pages
 
+services:
+  # Use docker to build h264bitstream for WASM
+  - docker
+
+before_install:
+  - mkdir -p dist/
+  - docker build -t h264bitstream-wasm .
+  - docker create -ti --name h264bitstream-wasm-container h264bitstream-wasm
+  - docker cp h264bitstream-wasm-container:/build/dist/ .
+  - docker rm -fv h264bitstream-wasm-container
+
 script:
   # Generates the dist folder with built app
   - npm run build
