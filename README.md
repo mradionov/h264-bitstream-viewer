@@ -1,6 +1,8 @@
 # h264-bitstream-viewer
 
-> UI on top of [h264bitstream][h264bitstream], inspired by [H264Naked][h264naked], to display information about NAL units of H264 bitstream.
+> Web UI on top of [h264bitstream][h264bitstream], inspired by [H264Naked][h264naked], to display information about NAL units of H264 bitstream.
+
+[Web application available here][web]
 
 ## Prerequisites
 
@@ -51,3 +53,4 @@ $ npm run test:watch
 
 [h264bitstream]: https://github.com/aizvorski/h264bitstream
 [h264naked]: https://github.com/shi-yan/H264Naked
+[web]: https://mradionov.github.io/h264-bitstream-viewer/

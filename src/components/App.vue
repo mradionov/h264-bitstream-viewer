@@ -27,16 +27,16 @@
         />
       </div>
       <div :class="$style.details">
-        <UiTabs v-if="hasDetails">
+        <UiTabs v-if="hasDetails" :class="$style.tabs">
+          <UiTab title="Details">
+            <TabDetails :details="details" />
+          </UiTab>
           <UiTab title="NAL">
             <TabUnit
               :number="this.selectedNumber"
               :range="selectedRange"
               :unitHeader="selectedUnitHeader"
             />
-          </UiTab>
-          <UiTab title="Details">
-            <TabDetails :details="details" />
           </UiTab>
         </UiTabs>
       </div>
@@ -308,10 +308,24 @@ export default {
 }
 
 .details {
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 5px 20px;
+}
+
+.tabs {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.tabs > :global(.ui-tabs__body) {
+  display: flex;
+  flex-direction: column;
   min-height: 0;
   overflow: auto;
-  padding: 5px 20px;
 }
 
 .loading {

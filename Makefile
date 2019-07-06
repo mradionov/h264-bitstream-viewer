@@ -14,23 +14,3 @@ h264bitstream/.libs/libh264bitstream.so.0.0.0:
 		autoreconf -i && \
  		emconfigure ./configure && \
 		emmake make CFLAGS=-DHAVE_SEI
-
-# .PHONY: all clean deploy
-
-# all: dist
-
-# dist:
-# 	git worktree add dist gh-pages
-
-# dist_clean:
-# 	rm dist/*
-
-# clean:
-# 	cd h264bitstream && \
-# 		make clean
-
-# deploy: all
-# 	cd dist && \
-# 		git add --all && \
-# 		git commit -m "Deploy gh-pages" && \
-# 		git push origin gh-pages
