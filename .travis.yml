@@ -1,0 +1,34 @@
+language: node_js
+node_js:
+  # Latest stable version, Node 10 at the moment of creating config
+  - 'lts/*'
+
+cache:
+  directories: node_modules/
+
+# Blocklist
+branches:
+  except:
+    # Will be deployed to, no need to build it
+    - gh-pages
+
+script:
+  # Generates the dist folder with built app
+  - npm run build
+  # Runs tests
+  - npm run test
+
+# Deploys built application to gh-pages
+# Git-ignored files won't be deployed.
+# https://docs.travis-ci.com/user/deployment/pages/
+deploy:
+  provider: pages
+  # Directory to push to GitHub Pages, relative to the current directory
+  local_dir: dist/
+  # Prevent travis from cleaning out the branch before the deploy occurs
+  skip_cleanup: true
+  # Set in travis-ci.org dashboard in Environment Variables
+  github_token: $GITHUB_TOKEN
+  # Build only from master
+  on:
+    branch: master
