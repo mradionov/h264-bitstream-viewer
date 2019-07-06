@@ -1,4 +1,5 @@
 dist/h264bitstream.js: src/h264bitstream-wrapper.cpp h264bitstream/.libs/libh264bitstream.so.0.0.0
+	mkdir dist
 	emcc \
 		--bind \
 		-O2  \
@@ -14,22 +15,22 @@ h264bitstream/.libs/libh264bitstream.so.0.0.0:
  		emconfigure ./configure && \
 		emmake make CFLAGS=-DHAVE_SEI
 
-.PHONY: all clean deploy
+# .PHONY: all clean deploy
 
-all: dist
+# all: dist
 
-dist:
-	git worktree add dist gh-pages
+# dist:
+# 	git worktree add dist gh-pages
 
-dist_clean:
-	rm dist/*
+# dist_clean:
+# 	rm dist/*
 
-clean:
-	cd h264bitstream && \
-		make clean
+# clean:
+# 	cd h264bitstream && \
+# 		make clean
 
-deploy: all
-	cd dist && \
-		git add --all && \
-		git commit -m "Deploy gh-pages" && \
-		git push origin gh-pages
+# deploy: all
+# 	cd dist && \
+# 		git add --all && \
+# 		git commit -m "Deploy gh-pages" && \
+# 		git push origin gh-pages
