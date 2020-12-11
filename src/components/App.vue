@@ -288,6 +288,7 @@ export default {
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-height: 0;
   padding: 10px;
 }
 
