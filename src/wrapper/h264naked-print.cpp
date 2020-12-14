@@ -1,15 +1,8 @@
 #include <iostream>
-#include <sstream>
 
-#include <emscripten.h>
-#include <emscripten/bind.h>
+#include "h264naked-print.h"
 
-#include <h264_stream.h>
-
-// using namespace emscripten;
 using namespace std;
-
-extern "C" {
 
 // The following functions:
 // - print_sps
@@ -351,48 +344,4 @@ void print_nal(stringstream &ts, h264_stream_t* h, nal_t* nal)
     else if( nal->nal_unit_type == NAL_UNIT_TYPE_PPS) { print_pps(ts, h->pps); }
     else if( nal->nal_unit_type == NAL_UNIT_TYPE_AUD) { print_aud(ts, h->aud); }
     else if( nal->nal_unit_type == NAL_UNIT_TYPE_SEI) { print_seis(ts, h ); }
-}
-
-struct Reader {
-  Reader() {}
-
-  string read(uintptr_t input, int size) {
-    const int32_t* data = reinterpret_cast<int32_t*>(input);
-
-    uint8_t* buf = new uint8_t[size];
-
-    for (int i = 0; i < size; i += 1) {
-      buf[i] = (uint8_t) (data[i] & 0xff);
-    }
-
-    h264_stream_t* h = h264_new();
-
-    int ret = read_nal_unit(h, buf, size);
-
-    // cout << "ret = " << ret << endl;
-
-    stringstream ss;
-
-    print_nal(ss, h, h->nal);
-
-    // cout << ss.str() << endl;
-
-    h264_free(h);
-
-    delete [] buf;
-
-    return ss.str();
-  }
-};
-
-
-EMSCRIPTEN_BINDINGS(H264Bitstream) {
-
-  emscripten::class_<Reader>("Reader")
-    .constructor<>()
-    .function("read", &Reader::read)
-    ;
-
-}
-
 }
