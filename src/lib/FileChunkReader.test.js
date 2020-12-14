@@ -27,13 +27,24 @@ test('no args full file', async (t) => {
   t.deepEqual(new Uint8Array(buffer), data);
 });
 
+test('read till the end', async (t) => {
+  const data = new Uint8Array([1, 2, 3, 4, 5]);
+  const file = new File([data.buffer], 'test');
+
+  const reader = new FileChunkReader(file);
+
+  const buffer = await reader.readAsArrayBuffer(1);
+
+  t.deepEqual(new Uint8Array(buffer), new Uint8Array([2, 3, 4, 5]));
+});
+
 test('read chunk', async (t) => {
   const data = new Uint8Array([1, 2, 3, 4, 5]);
   const file = new File([data.buffer], 'test');
 
   const reader = new FileChunkReader(file);
 
-  const buffer = await reader.readAsArrayBuffer(1, 3);
+  const buffer = await reader.readAsArrayBuffer(1, 2);
 
   t.deepEqual(new Uint8Array(buffer), new Uint8Array([2, 3]));
 });

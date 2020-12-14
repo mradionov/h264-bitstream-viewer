@@ -22,7 +22,7 @@ class FileReadStream extends EventEmitter {
   async readNextChunk() {
     const buffer = await this.chunkReader.readAsArrayBuffer(
       this.offset,
-      this.offset + this.chunkSize,
+      this.chunkSize,
     );
 
     if (buffer.byteLength === 0) {

@@ -225,7 +225,7 @@ export default {
       const chunkReader = new FileChunkReader(this.$options.file);
       const buffer = await chunkReader.readAsArrayBuffer(
         range.start,
-        range.end,
+        range.size,
       );
       const data = new Uint8Array(buffer);
 
@@ -247,10 +247,12 @@ export default {
       }
 
       const start = pageRanges[0].start;
-      const end = pageRanges[pageRanges.length - 1].end;
+      const size = pageRanges.reduce((sum, range) => {
+        return sum + range.size;
+      }, 0);
 
       const chunkReader = new FileChunkReader(this.$options.file);
-      const buffer = await chunkReader.readAsArrayBuffer(start, end);
+      const buffer = await chunkReader.readAsArrayBuffer(start, size);
       const data = new Uint8Array(buffer);
 
       const unitHeaders = pageRanges.map((range) => {

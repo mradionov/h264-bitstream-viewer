@@ -3,10 +3,12 @@ class FileChunkReader {
     this.file = file;
   }
 
-  async readAsArrayBuffer(start = 0, end = undefined) {
-    if (end === undefined) {
-      end = Math.max(0, this.file.size);
+  async readAsArrayBuffer(start = 0, size = undefined) {
+    if (size === undefined) {
+      size = this.file.size - start;
     }
+
+    const end = start + size;
 
     const blob = this.file.slice(start, end);
     if (blob.size === 0) {
