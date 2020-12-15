@@ -16,7 +16,7 @@
       <Cell>
         <strong>{{ unitHeader.type }}</strong>
       </Cell>
-      <Cell>{{ unitHeader.type | nalTypeDisplayed }}</Cell>
+      <Cell>{{ unitHeader.type | naluTypeDisplayed }}</Cell>
       <Cell>{{ unitHeader.refIdc }}</Cell>
       <Cell>{{ unitHeader.forbiddenZeroBit }}</Cell>
     </Row>

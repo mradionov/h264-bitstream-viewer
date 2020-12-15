@@ -1,4 +1,4 @@
-export const NAL_UNIT_TYPES = {
+export const NALU_TYPES = {
   UNSPECIFIED: 0,
   CODED_SLICE_NON_IDR: 1,
   CODED_SLICE_DATA_PARTITION_A: 2,

@@ -35,10 +35,11 @@
           @perPageChange="handlePerPageChange"
         />
       </div>
-      <div :class="$style.details">
-        <UiTabs v-if="hasDetails" :class="$style.tabs">
-          <UiTab title="Details">
-            <TabDetails :details="details" />
+      <div :class="$style.payload">
+        <UiTabs v-if="hasPayload" :class="$style.tabs">
+          <UiTab title="Payload">
+            <PayloadPPS v-if="isPayloadPPS" :payload="payload" />
+            <PayloadNaked v-if="isPayloadNaked" :payload="payload" />
           </UiTab>
           <UiTab title="NAL">
             <TabUnit
@@ -58,7 +59,8 @@ import { UiFileupload, UiProgressCircular, UiTabs, UiTab } from 'keen-ui';
 
 import Link from './Link';
 import Pagination from './Pagination';
-import TabDetails from './TabDetails';
+import PayloadNaked from './PayloadNaked';
+import PayloadPPS from './PayloadPPS';
 import TabUnit from './TabUnit';
 import UnitHeaderList from './UnitHeaderList';
 
@@ -66,6 +68,8 @@ import FileChunkReader from '../lib/FileChunkReader';
 import FileReadStream from '../lib/FileReadStream';
 import H264BitstreamParser from '../lib/H264BitstreamParser';
 import H264BitstreamOffsetStream from '../lib/H264BitstreamOffsetStream';
+
+import { NALU_TYPES } from '../constants';
 
 export default {
   components: {
@@ -76,7 +80,8 @@ export default {
 
     Link,
     Pagination,
-    TabDetails,
+    PayloadNaked,
+    PayloadPPS,
     TabUnit,
     UnitHeaderList,
   },
@@ -88,7 +93,7 @@ export default {
       totalRanges: 0,
       selectedIndex: -1,
       selectedUnitHeader: null,
-      details: null,
+      payload: null,
       currentPage: 1,
       perPage: 30,
       unitHeaders: [],
@@ -113,8 +118,20 @@ export default {
 
       return progress;
     },
-    hasDetails() {
-      return this.details !== null;
+    hasPayload() {
+      return this.payload !== null;
+    },
+    isPayloadPPS() {
+      if (this.selectedUnitHeader === null) {
+        return false;
+      }
+      return this.selectedUnitHeader.type === NALU_TYPES.PPS;
+    },
+    isPayloadNaked() {
+      if (this.selectedUnitHeader === null) {
+        return false;
+      }
+      return typeof this.payload === 'string';
     },
     indexOffset() {
       return (this.currentPage - 1) * this.perPage;
@@ -155,7 +172,7 @@ export default {
       this.totalRanges = 0;
       this.selectedIndex = -1;
       this.selectedUnitHeader = null;
-      this.details = null;
+      this.payload = null;
       this.currentPage = 1;
       this.unitHeaders = [];
     },
@@ -213,14 +230,10 @@ export default {
     },
 
     async handleUnitHeaderSelect(unitHeader, index) {
-      this.selectedUnitHeader = unitHeader;
-
       const range = this.$options.ranges[index];
       if (range === undefined) {
         return;
       }
-
-      this.selectedIndex = index;
 
       const chunkReader = new FileChunkReader(this.$options.file);
       const buffer = await chunkReader.readAsArrayBuffer(
@@ -232,9 +245,20 @@ export default {
       const dataNoStartCode = data.slice(3);
 
       const reader = new window.Module.Reader();
-      const text = this.read(reader, dataNoStartCode);
 
-      this.details = text;
+      let payload = null;
+
+      if (unitHeader.type === NALU_TYPES.PPS) {
+        payload = this.readPPS(reader, dataNoStartCode);
+      } else {
+        payload = this.readNaked(reader, dataNoStartCode);
+      }
+
+      console.log({ payload });
+
+      this.payload = payload;
+      this.selectedIndex = index;
+      this.selectedUnitHeader = unitHeader;
     },
 
     async loadPage() {
@@ -266,7 +290,7 @@ export default {
       this.unitHeaders = unitHeaders;
     },
 
-    read(reader, data) {
+    readNaked(reader, data) {
       const unitData32 = new Int32Array(data);
 
       const numBytes = unitData32.length * unitData32.BYTES_PER_ELEMENT;
@@ -275,7 +299,23 @@ export default {
       const heapBytes = new Uint8Array(Module.HEAPU8.buffer, ptr, numBytes);
       heapBytes.set(new Uint8Array(unitData32.buffer));
 
-      const ret = reader.read(ptr, unitData32.length);
+      const ret = reader.readNaked(ptr, unitData32.length);
+
+      Module._free(ptr);
+
+      return ret;
+    },
+
+    readPPS(reader, data) {
+      const unitData32 = new Int32Array(data);
+
+      const numBytes = unitData32.length * unitData32.BYTES_PER_ELEMENT;
+      const ptr = Module._malloc(numBytes);
+
+      const heapBytes = new Uint8Array(Module.HEAPU8.buffer, ptr, numBytes);
+      heapBytes.set(new Uint8Array(unitData32.buffer));
+
+      const ret = reader.readPPS(ptr, unitData32.length);
 
       Module._free(ptr);
 
@@ -335,7 +375,7 @@ export default {
   padding: 10px 0;
 }
 
-.details {
+.payload {
   display: flex;
   flex: 1;
   flex-direction: column;

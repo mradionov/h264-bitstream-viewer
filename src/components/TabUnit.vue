@@ -5,7 +5,7 @@
         <HeaderCell>Type</HeaderCell>
         <Cell>
           {{ unitHeader.type }}
-          <i>({{ unitHeader.type | nalTypeDisplayed }})</i>
+          <i>({{ unitHeader.type | naluTypeDisplayed }})</i>
         </Cell>
       </Row>
       <Row>

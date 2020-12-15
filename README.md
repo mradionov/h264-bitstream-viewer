@@ -14,13 +14,13 @@
 Fetch [h264bitstream][h264bitstream] as a submodule:
 
 ```bash
-$ git submodule update --init --recursive
+git submodule update --init --recursive
 ```
 
 Fetch NPM dependencies:
 
 ```bash
-$ npm install
+npm install
 ```
 
 ## Build
@@ -28,14 +28,14 @@ $ npm install
 Build WASM:
 
 ```bash
-$ ./build.sh
+./build.sh
 ```
 
 Build Frontend Application:
 
 ```bash
-$ npm run build
-$ npm run build:watch
+npm run build
+npm run build:watch
 ```
 
 ## Develop
@@ -47,8 +47,8 @@ Serve `dist/` folder using any web-server and open `index.html` in browser.
 ## Test
 
 ```bash
-$ npm run test
-$ npm run test:watch
+npm run test
+npm run test:watch
 ```
 
 [h264bitstream]: https://github.com/aizvorski/h264bitstream

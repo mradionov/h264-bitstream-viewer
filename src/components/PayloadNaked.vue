@@ -1,22 +1,22 @@
 <template>
-  <div v-html="formattedDetails" />
+  <div v-html="formattedPayload" />
 </template>
 
 <script>
 export default {
   props: {
-    details: {
+    payload: {
       type: String,
       default: null,
     },
   },
   computed: {
-    formattedDetails() {
-      if (this.details === null) {
+    formattedPayload() {
+      if (this.payload === null) {
         return '';
       }
 
-      const formattedText = this.details
+      const formattedText = this.payload
         .split('\n')
         .map((line) => {
           const match = line.match(/^\s+/);
