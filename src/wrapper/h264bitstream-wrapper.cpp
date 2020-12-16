@@ -7,58 +7,7 @@
 #include <h264_stream.h>
 
 #include "reader.h"
-
-using array_int_2 = std::array<int, 2>;
-using array_int_6 = std::array<int, 6>;
-using array_int_8 = std::array<int, 8>;
-using array_int_96 = std::array<int, 96>;
-using array_int_128 = std::array<int, 128>;
-using array_int_256 = std::array<int, 256>;
-
-template<
-  typename Result,
-  typename ValueObject,
-  typename FieldType,
-  size_t N,
-  size_t M,
-  FieldType ValueObject::*member
->
-Result readArray2d(const ValueObject& vobj) {
-  Result arr1d;
-
-  for (size_t i = 0; i < N; ++i) {
-    for (size_t j = 0; j < M; ++j) {
-      arr1d[i * M + j] = (vobj.*member)[i][j];
-    }
-  }
-
-  return arr1d;
-}
-
-template<typename Result, typename ValueObject>
-void writeArray2d(ValueObject& vobj, Result) {}
-
-// Template metaprogramming used to register elements for array bindings.
-// Otherwise you will have to manually mention all of them, which is tedious.
-// Taken from:
-// http://nnarain.github.io/2019/01/19/GameboyCore-in-the-Web!.html
-template<typename ArrayT, size_t N>
-struct ArrayInitializer : public ArrayInitializer<ArrayT, N-1>
-{
-  explicit ArrayInitializer(emscripten::value_array<ArrayT>& arr)
-    : ArrayInitializer<ArrayT, N-1>{arr}
-  {
-    arr.element(emscripten::index<N-1>());
-  }
-};
-
-template<typename ArrayT>
-struct ArrayInitializer<ArrayT, 0>
-{
-  explicit ArrayInitializer(emscripten::value_array<ArrayT>& arr)
-  {
-  }
-};
+#include "value-array.h"
 
 extern "C" {
 
@@ -70,23 +19,12 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .function("readPPS", &Reader::readPPS)
   ;
 
-  emscripten::value_array<array_int_2> def_array_int_2("array_int_2");
-  ArrayInitializer<array_int_2, 2>{def_array_int_2};
-
-  emscripten::value_array<array_int_6> def_array_int_6("array_int_6");
-  ArrayInitializer<array_int_6, 6>{def_array_int_6};
-
-  emscripten::value_array<array_int_8> def_array_int_8("array_int_8");
-  ArrayInitializer<array_int_8, 8>{def_array_int_8};
-
-  emscripten::value_array<array_int_96> def_array_int_96("array_int_96");
-  ArrayInitializer<array_int_96, 96>{def_array_int_96};
-
-  emscripten::value_array<array_int_128> def_array_int_128("array_int_128");
-  ArrayInitializer<array_int_128, 128>{def_array_int_128};
-
-  emscripten::value_array<array_int_256> def_array_int_256("array_int_256");
-  ArrayInitializer<array_int_256, 256>{def_array_int_256};
+  initValueArray<int, 2>("array_int_2");
+  initValueArray<int, 6>("array_int_6");
+  initValueArray<int, 8>("array_int_8");
+  initValueArray<int, 96>("array_int_96");
+  initValueArray<int, 128>("array_int_128");
+  initValueArray<int, 256>("array_int_256");
 
   emscripten::value_object<pps_t>("pps_t")
     .field("pic_parameter_set_id", &pps_t::pic_parameter_set_id)
@@ -135,10 +73,8 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     )
     .field(
       "ScalingList4x4",
-      &readArray2d<
-        array_int_96, pps_t, int[6][16], 6, 16, &pps_t::ScalingList4x4
-      >,
-      &writeArray2d<array_int_96, pps_t>
+      &readArray2d<int, 6, 16, int[6][16], pps_t, &pps_t::ScalingList4x4>,
+      &writeArray2d<int, 6, 16, pps_t>
     )
     .field(
       "UseDefaultScalingMatrix4x4Flag",
@@ -146,10 +82,8 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     )
     .field(
       "ScalingList8x8",
-      &readArray2d<
-        array_int_128, pps_t, int[2][64], 2, 64, &pps_t::ScalingList8x8
-      >,
-      &writeArray2d<array_int_128, pps_t>
+      &readArray2d<int, 2, 64, int[2][64], pps_t, &pps_t::ScalingList8x8>,
+      &writeArray2d<int, 2, 64, pps_t>
     )
     .field(
       "UseDefaultScalingMatrix8x8Flag",
