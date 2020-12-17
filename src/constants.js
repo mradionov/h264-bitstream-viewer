@@ -22,3 +22,26 @@ export const NALU_TYPES = {
   // 20..23 reserved
   // 24..31 unspecified
 };
+
+// https://en.wikipedia.org/wiki/Advanced_Video_Coding#Profiles
+export const PROFILE_IDC = {
+  CAVLC: 44, // CAVLC 4:4:4 Intra Profile (44)
+  CBP: 66, // Baseline Profile (BP, 66)
+  MP: 77, // Main Profile (MP, 77)
+  ScalableBP: 83, // Scalable Baseline Profile (83)
+  ScalableHP: 86, // Scalable High Profile (86)
+  XP: 88, // Extended Profile (XP, 88)
+  HiP: 100, // High Profile (HiP, 100)
+  Hi10P: 110, // High 10 Profile (Hi10P, 110)
+  MultiviewHP: 118, // Multiview High Profile (118)
+  Hi422P: 122, // High 4:2:2 Profile (Hi422P, 122)
+  StereoHP: 128, // Stereo High Profile (128)
+  MFCHP: 134, // MFC High Profile (134)
+  MultiviewDepthHP: 138, // Multiview Depth High Profile (138)
+  EnchancedMultiviewDepthHP: 139, // Enhanced Multiview Depth High Profile (139)
+  Hi444PP: 244, // High 4:4:4 Predictive Profile (Hi444PP, 244)
+};
+
+export const SAR = {
+  Extended: 255,
+};

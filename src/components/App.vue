@@ -38,8 +38,9 @@
       <div :class="$style.payload">
         <UiTabs v-if="hasPayload" :class="$style.tabs">
           <UiTab title="Payload">
-            <PayloadPPS v-if="isPayloadPPS" :payload="payload" />
             <PayloadNaked v-if="isPayloadNaked" :payload="payload" />
+            <PayloadPPS v-if="isPayloadPPS" :payload="payload" />
+            <PayloadSPS v-if="isPayloadSPS" :payload="payload" />
           </UiTab>
           <UiTab title="NAL">
             <TabUnit
@@ -61,6 +62,7 @@ import Link from './Link';
 import Pagination from './Pagination';
 import PayloadNaked from './PayloadNaked';
 import PayloadPPS from './PayloadPPS';
+import PayloadSPS from './PayloadSPS';
 import TabUnit from './TabUnit';
 import UnitHeaderList from './UnitHeaderList';
 
@@ -82,6 +84,7 @@ export default {
     Pagination,
     PayloadNaked,
     PayloadPPS,
+    PayloadSPS,
     TabUnit,
     UnitHeaderList,
   },
@@ -126,6 +129,12 @@ export default {
         return false;
       }
       return this.selectedUnitHeader.type === NALU_TYPES.PPS;
+    },
+    isPayloadSPS() {
+      if (this.selectedUnitHeader === null) {
+        return false;
+      }
+      return this.selectedUnitHeader.type === NALU_TYPES.SPS;
     },
     isPayloadNaked() {
       if (this.selectedUnitHeader === null) {
@@ -250,6 +259,8 @@ export default {
 
       if (unitHeader.type === NALU_TYPES.PPS) {
         payload = this.readPPS(reader, dataNoStartCode);
+      } else if (unitHeader.type === NALU_TYPES.SPS) {
+        payload = this.readSPS(reader, dataNoStartCode);
       } else {
         payload = this.readNaked(reader, dataNoStartCode);
       }
@@ -316,6 +327,22 @@ export default {
       heapBytes.set(new Uint8Array(unitData32.buffer));
 
       const ret = reader.readPPS(ptr, unitData32.length);
+
+      Module._free(ptr);
+
+      return ret;
+    },
+
+    readSPS(reader, data) {
+      const unitData32 = new Int32Array(data);
+
+      const numBytes = unitData32.length * unitData32.BYTES_PER_ELEMENT;
+      const ptr = Module._malloc(numBytes);
+
+      const heapBytes = new Uint8Array(Module.HEAPU8.buffer, ptr, numBytes);
+      heapBytes.set(new Uint8Array(unitData32.buffer));
+
+      const ret = reader.readSPS(ptr, unitData32.length);
 
       Module._free(ptr);
 

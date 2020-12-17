@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: different ways to read and display binary: bs_read_u1, bs_read_ue, bs_read_se, etc -->
   <div>
     <Table>
       <Row>
@@ -22,59 +21,12 @@
         <Cell>num_slice_groups_minus1</Cell>
         <Cell>{{ payload.num_slice_groups_minus1 }}</Cell>
       </Row>
-      <!-- TODO: must be tested on real-->
       <template v-if="payload.num_slice_groups_minus1 > 0">
-        <Row>
-          <Cell>slice_group_map_type</Cell>
-          <Cell>{{ payload.slice_group_map_type }}</Cell>
+        <Row warn>
+          <Cell>TODO</Cell>
+          <Cell>TODO</Cell>
         </Row>
-        <template v-if="payload.slice_group_map_type === 0">
-          <Row v-for="(_, i) in payload.num_slice_groups_minus1" :key="i">
-            <Cell>run_length_minus1[{{ i }}]</Cell>
-            <Cell>
-              {{ payload.run_length_minus1.get(i) }}
-            </Cell>
-          </Row>
-        </template>
-        <template v-if="payload.slice_group_map_type === 2">
-          <template v-for="(_, i) in payload.num_slice_groups_minus1">
-            <Row :key="`top_left_${i}`">
-              <Cell>top_left[{{ i }}]</Cell>
-              <Cell>{{ payload.top_left.get(i) }}</Cell>
-            </Row>
-            <Row :key="`bottom_right_${i}`">
-              <Cell>bottom_right[{{ i }}]</Cell>
-              <Cell>{{ payload.bottom_right.get(i) }}</Cell>
-            </Row>
-          </template>
-        </template>
-        <template
-          v-if="
-            payload.slice_group_map_type === 3 ||
-              payload.slice_group_map_type === 4 ||
-              payload.slice_group_map_type === 5
-          "
-        >
-          <Row>
-            <Cell>slice_group_change_direction_flag</Cell>
-            <Cell>{{ payload.slice_group_change_direction_flag }}</Cell>
-          </Row>
-          <Row>
-            <Cell>slice_group_change_rate_minus1</Cell>
-            <Cell>{{ payload.slice_group_change_rate_minus1 }}</Cell>
-          </Row>
-        </template>
-        <template v-if="payload.slice_group_map_type === 6">
-          <Row>
-            <Cell>pic_size_in_map_units_minus1</Cell>
-            <Cell>{{ payload.pic_size_in_map_units_minus1 }}</Cell>
-          </Row>
-          <Row v-for="(_, i) in payload.pic_size_in_map_units_minus1" :key="i">
-            <!-- TODO: v = intlog2 -->
-            <Cell>slice_group_id[{{ i }}]</Cell>
-            <Cell>{{ payload.slice_group_id.get(i) }}</Cell>
-          </Row>
-        </template>
+        <!-- TODO if( pps->num_slice_groups_minus1 > 0 ) -->
       </template>
       <Row>
         <Cell>num_ref_idx_l0_active_minus1</Cell>
@@ -124,14 +76,20 @@
         <Cell>pic_scaling_matrix_present_flag</Cell>
         <Cell>{{ payload.pic_scaling_matrix_present_flag }}</Cell>
       </Row>
-      <!--
-      TODO:
-      int pic_scaling_list_present_flag[8];
-      int ScalingList4x4[6][16];
-      int UseDefaultScalingMatrix4x4Flag[6];
-      int ScalingList8x8[2][64];
-      int UseDefaultScalingMatrix8x8Flag[2];
-      -->
+      <template v-if="payload.pic_scaling_matrix_present_flag">
+        <Row warn>
+          <Cell>TODO</Cell>
+          <Cell>TODO</Cell>
+        </Row>
+        <!--
+        TODO:
+        int pic_scaling_list_present_flag[8];
+        int ScalingList4x4[6][16];
+        int UseDefaultScalingMatrix4x4Flag[6];
+        int ScalingList8x8[2][64];
+        int UseDefaultScalingMatrix8x8Flag[2];
+        -->
+      </template>
       <Row>
         <Cell>second_chroma_qp_index_offset</Cell>
         <Cell>{{ payload.second_chroma_qp_index_offset }}</Cell>
