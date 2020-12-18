@@ -21,9 +21,11 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
   initValueArray<int, 2>("array_int_2");
   initValueArray<int, 6>("array_int_6");
   initValueArray<int, 8>("array_int_8");
+  initValueArray<int, 12>("array_int_12");
   initValueArray<int, 96>("array_int_96");
   initValueArray<int, 128>("array_int_128");
   initValueArray<int, 256>("array_int_256");
+  initValueArray<int, 384>("array_int_384");
 
   emscripten::value_object<pps_t>("pps_t")
     .field("pic_parameter_set_id", &pps_t::pic_parameter_set_id)
@@ -111,13 +113,19 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .field("bit_depth_chroma_minus8", &sps_t::bit_depth_chroma_minus8)
     .field("qpprime_y_zero_transform_bypass_flag", &sps_t::qpprime_y_zero_transform_bypass_flag)
     .field("seq_scaling_matrix_present_flag", &sps_t::seq_scaling_matrix_present_flag)
-    /*
-    int seq_scaling_list_present_flag[12];
-    int ScalingList4x4[6][16];
-    int UseDefaultScalingMatrix4x4Flag[6];
-    int ScalingList8x8[6][64];
-    int UseDefaultScalingMatrix8x8Flag[6];
-    */
+    .field("seq_scaling_list_present_flag", &sps_t::seq_scaling_list_present_flag)
+    .field(
+      "ScalingList4x4",
+      &readArray2d<int, 6, 16, int[6][16], sps_t, &sps_t::ScalingList4x4>,
+      &writeArray2d<int, 6, 16, sps_t>
+    )
+    .field("UseDefaultScalingMatrix4x4Flag", &sps_t::UseDefaultScalingMatrix4x4Flag)
+    .field(
+      "ScalingList8x8",
+      &readArray2d<int, 6, 64, int[6][64], sps_t, &sps_t::ScalingList8x8>,
+      &writeArray2d<int, 6, 64, sps_t>
+    )
+    .field("UseDefaultScalingMatrix8x8Flag", &sps_t::UseDefaultScalingMatrix8x8Flag)
     .field("log2_max_frame_num_minus4", &sps_t::log2_max_frame_num_minus4)
     .field("pic_order_cnt_type", &sps_t::pic_order_cnt_type)
     .field("log2_max_pic_order_cnt_lsb_minus4", &sps_t::log2_max_pic_order_cnt_lsb_minus4)

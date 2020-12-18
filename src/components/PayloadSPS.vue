@@ -67,18 +67,28 @@
           <Cell>{{ payload.seq_scaling_matrix_present_flag }}</Cell>
         </Row>
         <template v-if="payload.seq_scaling_matrix_present_flag">
-          <Row warn>
-            <Cell>TODO</Cell>
-            <Cell>TODO</Cell>
-          </Row>
-          <!--
-          TODO
-          int seq_scaling_list_present_flag[12];
-          int ScalingList4x4[6][16];
-          int UseDefaultScalingMatrix4x4Flag[6];
-          int ScalingList8x8[6][64];
-          int UseDefaultScalingMatrix8x8Flag[6];
-          -->
+          <template v-for="(n, i) in 8">
+            <Row>
+              <Cell>seq_scaling_list_present_flag[{{ i }}]</Cell>
+              <Cell>{{ payload.seq_scaling_list_present_flag[i] }}</Cell>
+            </Row>
+            <template v-if="payload.seq_scaling_list_present_flag[i]">
+              <template v-if="i < 6">
+                <ScalingList
+                  :list="payload.ScalingList4x4"
+                  :size="16"
+                  :index="i"
+                />
+              </template>
+              <template v-else>
+                <ScalingList
+                  :list="payload.ScalingList8x8"
+                  :size="64"
+                  :index="i - 6"
+                />
+              </template>
+            </template>
+          </template>
         </template>
       </template>
       <Row>
@@ -340,6 +350,7 @@
 
 <script>
 import { Table, Row, Cell, HeaderRow, HeaderCell } from './Table';
+import ScalingList from './ScalingList';
 import { PROFILE_IDC, SAR } from '../constants';
 
 export default {
@@ -349,6 +360,7 @@ export default {
     Cell,
     HeaderRow,
     HeaderCell,
+    ScalingList,
   },
 
   computed: {
