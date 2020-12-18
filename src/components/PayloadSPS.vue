@@ -106,10 +106,7 @@
         </Row>
       </template>
       <template v-if="payload.pic_order_cnt_type === 1">
-        <Row warn>
-          <Cell>TODO</Cell>
-          <Cell>TODO</Cell>
-        </Row>
+        <TodoRow />
         <!--
         TODO
         int delta_pic_order_always_zero_flag;
@@ -278,10 +275,7 @@
         <Cell>{{ vui.nal_hrd_parameters_present_flag }}</Cell>
       </Row>
       <template v-if="vui.nal_hrd_parameters_present_flag">
-        <Row warn>
-          <Cell>TODO</Cell>
-          <Cell>TODO</Cell>
-        </Row>
+        <TodoRow />
         <!-- TODO read_debug_hrd_parameters(&sps->hrd_nal, b); -->
       </template>
       <Row>
@@ -289,10 +283,7 @@
         <Cell>{{ vui.vcl_hrd_parameters_present_flag }}</Cell>
       </Row>
       <template v-if="vui.vcl_hrd_parameters_present_flag">
-        <Row warn>
-          <Cell>TODO</Cell>
-          <Cell>TODO</Cell>
-        </Row>
+        <TodoRow />
         <!-- TODO read_debug_hrd_parameters(&sps->hrd_vcl, b); -->
       </template>
       <template
@@ -349,7 +340,7 @@
 </template>
 
 <script>
-import { Table, Row, Cell, HeaderRow, HeaderCell } from './Table';
+import { Table, Row, Cell, HeaderRow, HeaderCell, TodoRow } from './Table';
 import ScalingList from './ScalingList';
 import { PROFILE_IDC, SAR } from '../constants';
 
@@ -360,6 +351,7 @@ export default {
     Cell,
     HeaderRow,
     HeaderCell,
+    TodoRow,
     ScalingList,
   },
 

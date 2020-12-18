@@ -21,11 +21,9 @@
         <Cell>num_slice_groups_minus1</Cell>
         <Cell>{{ payload.num_slice_groups_minus1 }}</Cell>
       </Row>
+      <TodoRow />
       <template v-if="payload.num_slice_groups_minus1 > 0">
-        <Row warn>
-          <Cell>TODO</Cell>
-          <Cell>TODO</Cell>
-        </Row>
+        <TodoRow />
         <!-- TODO if( pps->num_slice_groups_minus1 > 0 ) -->
       </template>
       <Row>
@@ -77,10 +75,7 @@
         <Cell>{{ payload.pic_scaling_matrix_present_flag }}</Cell>
       </Row>
       <template v-if="payload.pic_scaling_matrix_present_flag">
-        <Row warn>
-          <Cell>TODO</Cell>
-          <Cell>TODO</Cell>
-        </Row>
+        <TodoRow />
         <!--
         TODO:
         int pic_scaling_list_present_flag[8];
@@ -99,13 +94,14 @@
 </template>
 
 <script>
-import { Table, Row, Cell } from './Table';
+import { Table, Row, Cell, TodoRow } from './Table';
 
 export default {
   components: {
     Table,
     Row,
     Cell,
+    TodoRow,
   },
 
   props: {
