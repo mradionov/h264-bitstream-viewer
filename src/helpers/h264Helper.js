@@ -1,4 +1,4 @@
-import { NALU_TYPES } from '../constants';
+import { NALU_TYPES } from '../lib';
 
 const h264Helper = {
   naluTypeDisplayed(type) {

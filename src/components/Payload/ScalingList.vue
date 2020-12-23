@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { Table, Row, Cell } from './Table';
+import { Table, Row, Cell } from '../Table';
 
 export default {
   components: {

@@ -13,7 +13,7 @@
     "build": "webpack",
     "build:watch": "npm run build -- --watch",
     "start": "npm run build:watch",
-    "test": "ava",
+    "test": "ava --verbose",
     "test:watch": "npm run test -- --watch"
   },
   "dependencies": {

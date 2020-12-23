@@ -16,6 +16,7 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .function("readNaked", &Reader::readNaked)
     .function("readPPS", &Reader::readPPS)
     .function("readSPS", &Reader::readSPS)
+    .function("readCodedSliceNonIDR", &Reader::readCodedSliceNonIDR)
   ;
 
   initValueArray<int, 2>("array_int_2");
@@ -192,4 +193,31 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
   ;
 
   emscripten::value_object<hrd_t>("hrd_t");
+
+  emscripten::value_object<slice_header_t>("slice_header_t")
+    .field("first_mb_in_slice", &slice_header_t::first_mb_in_slice)
+    .field("slice_type", &slice_header_t::slice_type)
+    .field("pic_parameter_set_id", &slice_header_t::pic_parameter_set_id)
+    .field("colour_plane_id", &slice_header_t::colour_plane_id)
+    .field("frame_num", &slice_header_t::frame_num)
+    .field("field_pic_flag", &slice_header_t::field_pic_flag)
+    .field("bottom_field_flag", &slice_header_t::bottom_field_flag)
+    .field("idr_pic_id", &slice_header_t::idr_pic_id)
+    .field("pic_order_cnt_lsb", &slice_header_t::pic_order_cnt_lsb)
+    .field("delta_pic_order_cnt_bottom", &slice_header_t::delta_pic_order_cnt_bottom)
+    .field("delta_pic_order_cnt", &slice_header_t::delta_pic_order_cnt)
+    .field("redundant_pic_cnt", &slice_header_t::redundant_pic_cnt)
+    .field("direct_spatial_mv_pred_flag", &slice_header_t::direct_spatial_mv_pred_flag)
+    .field("num_ref_idx_active_override_flag", &slice_header_t::num_ref_idx_active_override_flag)
+    .field("num_ref_idx_l0_active_minus1", &slice_header_t::num_ref_idx_l0_active_minus1)
+    .field("num_ref_idx_l1_active_minus1", &slice_header_t::num_ref_idx_l1_active_minus1)
+    .field("cabac_init_idc", &slice_header_t::cabac_init_idc)
+    .field("slice_qp_delta", &slice_header_t::slice_qp_delta)
+    .field("sp_for_switch_flag", &slice_header_t::sp_for_switch_flag)
+    .field("slice_qs_delta", &slice_header_t::slice_qs_delta)
+    .field("disable_deblocking_filter_idc", &slice_header_t::disable_deblocking_filter_idc)
+    .field("slice_alpha_c0_offset_div2", &slice_header_t::slice_alpha_c0_offset_div2)
+    .field("slice_beta_offset_div2", &slice_header_t::slice_beta_offset_div2)
+    .field("slice_group_change_cycle", &slice_header_t::slice_group_change_cycle)
+  ;
 };

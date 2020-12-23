@@ -10,7 +10,7 @@ COPY ./h264bitstream/ /build/h264bitstream/
 # libraries, therefore the whole build will fail.
 RUN sed -i 's/bin_PROGRAMS/#bin_PROGRAMS/' /build/h264bitstream/Makefile.am
 
-COPY ./src/wrapper/ /build/src/wrapper/
+COPY ./src/binding/ /build/src/binding/
 COPY ./Makefile /build/Makefile
 
 WORKDIR /build

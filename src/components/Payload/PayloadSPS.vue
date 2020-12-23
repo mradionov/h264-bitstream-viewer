@@ -3,86 +3,82 @@
     <Table>
       <Row>
         <Cell>profile_idc</Cell>
-        <Cell>{{ payload.profile_idc }}</Cell>
+        <Cell>{{ sps.profile_idc }}</Cell>
       </Row>
       <Row>
         <Cell>constraint_set0_flag</Cell>
-        <Cell>{{ payload.constraint_set0_flag }}</Cell>
+        <Cell>{{ sps.constraint_set0_flag }}</Cell>
       </Row>
       <Row>
         <Cell>constraint_set1_flag</Cell>
-        <Cell>{{ payload.constraint_set1_flag }}</Cell>
+        <Cell>{{ sps.constraint_set1_flag }}</Cell>
       </Row>
       <Row>
         <Cell>constraint_set2_flag</Cell>
-        <Cell>{{ payload.constraint_set2_flag }}</Cell>
+        <Cell>{{ sps.constraint_set2_flag }}</Cell>
       </Row>
       <Row>
         <Cell>constraint_set3_flag</Cell>
-        <Cell>{{ payload.constraint_set3_flag }}</Cell>
+        <Cell>{{ sps.constraint_set3_flag }}</Cell>
       </Row>
       <Row>
         <Cell>constraint_set4_flag</Cell>
-        <Cell>{{ payload.constraint_set4_flag }}</Cell>
+        <Cell>{{ sps.constraint_set4_flag }}</Cell>
       </Row>
       <Row>
         <Cell>constraint_set5_flag</Cell>
-        <Cell>{{ payload.constraint_set5_flag }}</Cell>
+        <Cell>{{ sps.constraint_set5_flag }}</Cell>
       </Row>
       <Row>
         <Cell>reserved_zero_2bits</Cell>
-        <Cell>{{ payload.reserved_zero_2bits }}</Cell>
+        <Cell>{{ sps.reserved_zero_2bits }}</Cell>
       </Row>
       <Row>
         <Cell>level_idc</Cell>
-        <Cell>{{ payload.level_idc }}</Cell>
+        <Cell>{{ sps.level_idc }}</Cell>
       </Row>
       <Row>
         <Cell>seq_parameter_set_id</Cell>
-        <Cell>{{ payload.seq_parameter_set_id }}</Cell>
+        <Cell>{{ sps.seq_parameter_set_id }}</Cell>
       </Row>
       <template v-if="isRequiredProfile">
         <Row>
           <Cell>chroma_format_idc</Cell>
-          <Cell>{{ payload.chroma_format_idc }}</Cell>
+          <Cell>{{ sps.chroma_format_idc }}</Cell>
         </Row>
-        <Row v-if="payload.chroma_format_idc === 3">
+        <Row v-if="sps.chroma_format_idc === 3">
           <Cell>residual_colour_transform_flag</Cell>
-          <Cell>{{ payload.residual_colour_transform_flag }}</Cell>
+          <Cell>{{ sps.residual_colour_transform_flag }}</Cell>
         </Row>
         <Row>
           <Cell>bit_depth_luma_minus8</Cell>
-          <Cell>{{ payload.bit_depth_luma_minus8 }}</Cell>
+          <Cell>{{ sps.bit_depth_luma_minus8 }}</Cell>
         </Row>
         <Row>
           <Cell>bit_depth_chroma_minus8</Cell>
-          <Cell>{{ payload.bit_depth_chroma_minus8 }}</Cell>
+          <Cell>{{ sps.bit_depth_chroma_minus8 }}</Cell>
         </Row>
         <Row>
           <Cell>qpprime_y_zero_transform_bypass_flag</Cell>
-          <Cell>{{ payload.qpprime_y_zero_transform_bypass_flag }}</Cell>
+          <Cell>{{ sps.qpprime_y_zero_transform_bypass_flag }}</Cell>
         </Row>
         <Row>
           <Cell>seq_scaling_matrix_present_flag</Cell>
-          <Cell>{{ payload.seq_scaling_matrix_present_flag }}</Cell>
+          <Cell>{{ sps.seq_scaling_matrix_present_flag }}</Cell>
         </Row>
-        <template v-if="payload.seq_scaling_matrix_present_flag">
+        <template v-if="sps.seq_scaling_matrix_present_flag">
           <template v-for="(n, i) in 8">
             <Row>
               <Cell>seq_scaling_list_present_flag[{{ i }}]</Cell>
-              <Cell>{{ payload.seq_scaling_list_present_flag[i] }}</Cell>
+              <Cell>{{ sps.seq_scaling_list_present_flag[i] }}</Cell>
             </Row>
-            <template v-if="payload.seq_scaling_list_present_flag[i]">
+            <template v-if="sps.seq_scaling_list_present_flag[i]">
               <template v-if="i < 6">
-                <ScalingList
-                  :list="payload.ScalingList4x4"
-                  :size="16"
-                  :index="i"
-                />
+                <ScalingList :list="sps.ScalingList4x4" :size="16" :index="i" />
               </template>
               <template v-else>
                 <ScalingList
-                  :list="payload.ScalingList8x8"
+                  :list="sps.ScalingList8x8"
                   :size="64"
                   :index="i - 6"
                 />
@@ -93,19 +89,19 @@
       </template>
       <Row>
         <Cell>log2_max_frame_num_minus4</Cell>
-        <Cell>{{ payload.log2_max_frame_num_minus4 }}</Cell>
+        <Cell>{{ sps.log2_max_frame_num_minus4 }}</Cell>
       </Row>
       <Row>
         <Cell>pic_order_cnt_type</Cell>
-        <Cell>{{ payload.pic_order_cnt_type }}</Cell>
+        <Cell>{{ sps.pic_order_cnt_type }}</Cell>
       </Row>
-      <template v-if="payload.pic_order_cnt_type === 0">
+      <template v-if="sps.pic_order_cnt_type === 0">
         <Row>
           <Cell>log2_max_pic_order_cnt_lsb_minus4</Cell>
-          <Cell>{{ payload.log2_max_pic_order_cnt_lsb_minus4 }}</Cell>
+          <Cell>{{ sps.log2_max_pic_order_cnt_lsb_minus4 }}</Cell>
         </Row>
       </template>
-      <template v-if="payload.pic_order_cnt_type === 1">
+      <template v-if="sps.pic_order_cnt_type === 1">
         <TodoRow />
         <!--
         TODO
@@ -118,60 +114,60 @@
       </template>
       <Row>
         <Cell>num_ref_frames</Cell>
-        <Cell>{{ payload.num_ref_frames }}</Cell>
+        <Cell>{{ sps.num_ref_frames }}</Cell>
       </Row>
       <Row>
         <Cell>gaps_in_frame_num_value_allowed_flag</Cell>
-        <Cell>{{ payload.gaps_in_frame_num_value_allowed_flag }}</Cell>
+        <Cell>{{ sps.gaps_in_frame_num_value_allowed_flag }}</Cell>
       </Row>
       <Row>
         <Cell>pic_width_in_mbs_minus1</Cell>
-        <Cell>{{ payload.pic_width_in_mbs_minus1 }}</Cell>
+        <Cell>{{ sps.pic_width_in_mbs_minus1 }}</Cell>
       </Row>
       <Row>
         <Cell>pic_height_in_map_units_minus1</Cell>
-        <Cell>{{ payload.pic_height_in_map_units_minus1 }}</Cell>
+        <Cell>{{ sps.pic_height_in_map_units_minus1 }}</Cell>
       </Row>
       <Row>
         <Cell>frame_mbs_only_flag</Cell>
-        <Cell>{{ payload.frame_mbs_only_flag }}</Cell>
+        <Cell>{{ sps.frame_mbs_only_flag }}</Cell>
       </Row>
-      <Row v-if="!payload.frame_mbs_only_flag">
+      <Row v-if="!sps.frame_mbs_only_flag">
         <Cell>mb_adaptive_frame_field_flag</Cell>
-        <Cell>{{ payload.mb_adaptive_frame_field_flag }}</Cell>
+        <Cell>{{ sps.mb_adaptive_frame_field_flag }}</Cell>
       </Row>
       <Row>
         <Cell>direct_8x8_inference_flag</Cell>
-        <Cell>{{ payload.direct_8x8_inference_flag }}</Cell>
+        <Cell>{{ sps.direct_8x8_inference_flag }}</Cell>
       </Row>
       <Row>
         <Cell>frame_cropping_flag</Cell>
-        <Cell>{{ payload.frame_cropping_flag }}</Cell>
+        <Cell>{{ sps.frame_cropping_flag }}</Cell>
       </Row>
-      <template v-if="payload.frame_cropping_flag">
+      <template v-if="sps.frame_cropping_flag">
         <Row>
           <Cell>frame_crop_left_offset</Cell>
-          <Cell>{{ payload.frame_crop_left_offset }}</Cell>
+          <Cell>{{ sps.frame_crop_left_offset }}</Cell>
         </Row>
         <Row>
           <Cell>frame_crop_right_offset</Cell>
-          <Cell>{{ payload.frame_crop_right_offset }}</Cell>
+          <Cell>{{ sps.frame_crop_right_offset }}</Cell>
         </Row>
         <Row>
           <Cell>frame_crop_top_offset</Cell>
-          <Cell>{{ payload.frame_crop_top_offset }}</Cell>
+          <Cell>{{ sps.frame_crop_top_offset }}</Cell>
         </Row>
         <Row>
           <Cell>frame_crop_bottom_offset</Cell>
-          <Cell>{{ payload.frame_crop_bottom_offset }}</Cell>
+          <Cell>{{ sps.frame_crop_bottom_offset }}</Cell>
         </Row>
       </template>
       <Row>
         <Cell>vui_parameters_present_flag</Cell>
-        <Cell>{{ payload.vui_parameters_present_flag }}</Cell>
+        <Cell>{{ sps.vui_parameters_present_flag }}</Cell>
       </Row>
     </Table>
-    <Table v-if="payload.vui_parameters_present_flag">
+    <Table v-if="sps.vui_parameters_present_flag">
       <HeaderRow>
         <HeaderCell>VUI</HeaderCell>
         <HeaderCell></HeaderCell>
@@ -340,9 +336,11 @@
 </template>
 
 <script>
-import { Table, Row, Cell, HeaderRow, HeaderCell, TodoRow } from './Table';
+import { PROFILE_IDC, SAR } from '../../lib';
+
+import { Table, Row, Cell, HeaderRow, HeaderCell, TodoRow } from '../Table';
+
 import ScalingList from './ScalingList';
-import { PROFILE_IDC, SAR } from '../constants';
 
 export default {
   components: {
@@ -356,8 +354,11 @@ export default {
   },
 
   computed: {
+    sps() {
+      return this.payload.sps;
+    },
     vui() {
-      return this.payload.vui;
+      return this.sps.vui;
     },
     isRequiredProfile() {
       const profiles = [
@@ -375,7 +376,7 @@ export default {
         PROFILE_IDC.MFCHP,
       ];
 
-      return profiles.includes(this.payload.profile_idc);
+      return profiles.includes(this.sps.profile_idc);
     },
   },
 

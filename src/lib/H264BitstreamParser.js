@@ -2,7 +2,7 @@ const START_CODE_SHORT = [0, 0, 1];
 const START_CODE_LONG = [0, 0, 0, 1];
 const ZEROS_SHORT = [0, 0, 0];
 
-class H264BitstreamParser {
+export class H264BitstreamParser {
   // Parse H264 bistream according to ISO/IEC 14496 - 10 Annex B,
   // but keep the 3-byte start code
   static findUnit(data, offset = 0) {
@@ -59,6 +59,18 @@ class H264BitstreamParser {
       start,
       end,
       size: end - start + 1,
+    };
+  }
+
+  static findUnitWithHeader(data, offset = 0) {
+    const location = this.findUnit(data, offset);
+
+    const headerOffset = location.start;
+    const header = this.readUnitHeader(data, headerOffset);
+
+    return {
+      ...location,
+      ...header,
     };
   }
 
@@ -123,5 +135,3 @@ class H264BitstreamParser {
     );
   }
 }
-
-export default H264BitstreamParser;

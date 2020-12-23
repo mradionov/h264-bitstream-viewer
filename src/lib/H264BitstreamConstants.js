@@ -45,3 +45,22 @@ export const PROFILE_IDC = {
 export const SAR = {
   Extended: 255,
 };
+
+export const SLICE_TYPES = {
+  P: 0, // P (P slice)
+  B: 1, // B (B slice)
+  I: 2, // I (I slice)
+  EP: 0, // EP (EP slice)
+  EB: 1, // EB (EB slice)
+  EI: 2, // EI (EI slice)
+  SP: 3, // SP (SP slice)
+  SI: 4, // SI (SI slice)
+  P_ONLY: 5, // P (P slice)
+  B_ONLY: 6, // B (B slice)
+  I_ONLY: 7, // I (I slice)
+  EP_ONLY: 5, // EP (EP slice)
+  EB_ONLY: 6, // EB (EB slice)
+  EI_ONLY: 7, // EI (EI slice)
+  SP_ONLY: 8, // SP (SP slice)
+  SI_ONLY: 9, // SI (SI slice)
+};

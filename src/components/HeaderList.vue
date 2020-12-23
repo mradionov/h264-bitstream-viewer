@@ -7,18 +7,18 @@
       <HeaderCell>Forbidden zero bit</HeaderCell>
     </HeaderRow>
     <Row
-      v-for="(unitHeader, index) in unitHeaders"
+      v-for="(header, index) in headers"
       :key="index"
       :class="[$style.row, isSelected(index) && $style.selected]"
-      @click.native="handleRowClick(unitHeader, index)"
+      @click.native="handleRowClick(header, index)"
     >
       <Cell>{{ index + indexOffset + 1 }}</Cell>
       <Cell>
-        <strong>{{ unitHeader.type }}</strong>
+        <strong>{{ header.type }}</strong>
       </Cell>
-      <Cell>{{ unitHeader.type | naluTypeDisplayed }}</Cell>
-      <Cell>{{ unitHeader.refIdc }}</Cell>
-      <Cell>{{ unitHeader.forbiddenZeroBit }}</Cell>
+      <Cell>{{ header.type | naluTypeDisplayed }}</Cell>
+      <Cell>{{ header.refIdc }}</Cell>
+      <Cell>{{ header.forbiddenZeroBit }}</Cell>
     </Row>
   </Table>
 </template>
@@ -44,7 +44,7 @@ export default {
       type: Number,
       default: -1,
     },
-    unitHeaders: {
+    headers: {
       type: Array,
       default: () => [],
     },
@@ -57,7 +57,6 @@ export default {
     isSelected(index) {
       return this.selectedIndex === this.getThruIndex(index);
     },
-
     handleRowClick(unitHeader, index) {
       if (this.isSelected(index)) {
         return;

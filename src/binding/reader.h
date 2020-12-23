@@ -7,10 +7,14 @@
 
 class Reader {
 public:
-  Reader() {}
+  Reader();
+  ~Reader();
   std::string readNaked(uintptr_t input, int size);
   pps_t readPPS(uintptr_t input, int size);
   sps_t readSPS(uintptr_t input, int size);
+  slice_header_t readCodedSliceNonIDR(uintptr_t input, int size);
+private:
+  h264_stream_t* m_h264_stream;
 };
 
 #endif

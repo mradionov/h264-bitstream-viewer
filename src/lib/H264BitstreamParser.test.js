@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import H264BitstreamParser from './H264BitstreamParser';
+import { H264BitstreamParser } from './H264BitstreamParser';
 
 test('findUnit: empty data, no offset', (t) => {
   const data = new Uint8Array(0);
@@ -88,6 +88,51 @@ test('findUnit: two units, all with 4-byte start-codes', (t) => {
 
   t.deepEqual(result1, { start: 1, end: 5, size: 5 });
   t.deepEqual(result2, { start: 7, end: 12, size: 6 });
+});
+
+test('findUnitWithHeader: no start-codes', (t) => {
+  const data = new Uint8Array([1, 2, 3, 4, 5]);
+
+  const result = H264BitstreamParser.findUnitWithHeader(data);
+
+  t.deepEqual(result, {
+    start: -1,
+    end: -1,
+    size: 0,
+    forbiddenZeroBit: -1,
+    refIdc: -1,
+    type: -1,
+  });
+});
+
+test('findUnitWithHeader: single unit, leading zeros', (t) => {
+  const data = new Uint8Array([0, 0, 0, 0, 0, 0, 1, 103, 6]);
+
+  const result = H264BitstreamParser.findUnitWithHeader(data);
+
+  t.deepEqual(result, {
+    start: 4,
+    end: 8,
+    size: 5,
+    forbiddenZeroBit: 0,
+    refIdc: 3,
+    type: 7,
+  });
+});
+
+test('findUnitWithHeader: single unit, leading trash', (t) => {
+  const data = new Uint8Array([1, 2, 3, 4, 0, 0, 1, 6, 7]);
+
+  const result = H264BitstreamParser.findUnitWithHeader(data);
+
+  t.deepEqual(result, {
+    start: 4,
+    end: 8,
+    size: 5,
+    forbiddenZeroBit: 0,
+    refIdc: 0,
+    type: 6,
+  });
 });
 
 test('readUnitHeader: empty data', (t) => {

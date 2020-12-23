@@ -1,7 +1,7 @@
 import avaTest from 'ava';
 import ninos from 'ninos';
 
-import FileChunkReader from './FileChunkReader';
+import { FileChunkReader } from './FileChunkReader';
 
 const test = ninos(avaTest);
 
