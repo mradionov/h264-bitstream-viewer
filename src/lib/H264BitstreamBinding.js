@@ -4,7 +4,10 @@ import { NALU_TYPES } from './H264BitstreamConstants';
 const MAP_TYPE_TO_METHOD_NAME = {
   [NALU_TYPES.PPS]: 'readPPS',
   [NALU_TYPES.SPS]: 'readSPS',
-  [NALU_TYPES.CODED_SLICE_NON_IDR]: 'readCodedSliceNonIDR',
+  [NALU_TYPES.CODED_SLICE_IDR]: 'readSliceHeader',
+  [NALU_TYPES.CODED_SLICE_NON_IDR]: 'readSliceHeader',
+  [NALU_TYPES.CODED_SLICE_AUR]: 'readSliceHeader',
+  [NALU_TYPES.CODED_SLICE_SVC_EXTENSION]: 'readSliceHeader',
 };
 
 const STATE = {
@@ -41,7 +44,13 @@ export class H264BitstreamBinding extends EventEmitter {
       payload.sps = this.readByType(header, data);
     } else if (header.type === NALU_TYPES.PPS) {
       payload.pps = this.readByType(header, data);
-    } else if (header.type === NALU_TYPES.CODED_SLICE_NON_IDR) {
+    } else if (
+      header.type === NALU_TYPES.CODED_SLICE_IDR ||
+      header.type === NALU_TYPES.CODED_SLICE_NON_IDR ||
+      header.type === NALU_TYPES.CODED_SLICE_AUR
+    ) {
+      payload = await this.readSliceHeader(header, data);
+    } else if (header.type === NALU_TYPES.CODED_SLICE_SVC_EXTENSION) {
       payload = await this.readSliceHeader(header, data);
     } else {
       payload.naked = this.readNaked(header.type, data);

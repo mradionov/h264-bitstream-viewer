@@ -70,7 +70,7 @@ sps_t Reader::readSPS(uintptr_t input, int size) {
   return sps;
 }
 
-slice_header_t Reader::readCodedSliceNonIDR(uintptr_t input, int size) {
+slice_header_t Reader::readSliceHeader(uintptr_t input, int size) {
   const int32_t* data = reinterpret_cast<int32_t*>(input);
 
   uint8_t* buf = new uint8_t[size];

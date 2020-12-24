@@ -6,17 +6,15 @@
 export default {
   props: {
     payload: {
-      type: String,
-      default: null,
+      type: Object,
     },
   },
   computed: {
     formattedPayload() {
-      if (this.payload === null) {
-        return '';
+      if (this.payload.naked === null) {
+        return;
       }
-
-      const formattedText = this.payload
+      const formattedText = this.payload.naked
         .split('\n')
         .map((line) => {
           const match = line.match(/^\s+/);

@@ -22,7 +22,7 @@
         <Cell>{{ pps.num_slice_groups_minus1 }}</Cell>
       </Row>
       <template v-if="pps.num_slice_groups_minus1 > 0">
-        <TodoRow />
+        <TodoRow tag="if pps->num_slice_groups_minus1 > 0" />
         <!-- TODO if( pps->num_slice_groups_minus1 > 0 ) -->
       </template>
       <Row>
@@ -74,7 +74,7 @@
         <Cell>{{ pps.pic_scaling_matrix_present_flag }}</Cell>
       </Row>
       <template v-if="pps.pic_scaling_matrix_present_flag">
-        <TodoRow />
+        <TodoRow tag="pps.pic_scaling_matrix_present_flag" />
         <!--
         TODO:
         int pic_scaling_list_present_flag[8];

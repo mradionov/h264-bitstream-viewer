@@ -9,10 +9,18 @@
       :payload="payload"
     />
     <PayloadSliceHeader
-      v-else-if="payload.header.type === NALU_TYPES.CODED_SLICE_NON_IDR"
+      v-else-if="
+        payload.header.type === NALU_TYPES.CODED_SLICE_IDR ||
+          payload.header.type === NALU_TYPES.CODED_SLICE_NON_IDR ||
+          payload.header.type === NALU_TYPES.CODED_SLICE_AUR
+      "
       :payload="payload"
     />
-    <PayloadNaked v-else-if="typeof payload === 'string'" :payload="payload" />
+    <PayloadSliceHeader
+      v-else-if="payload.header.type === NALU_TYPES.CODED_SLICE_SVC_EXTENSION"
+      :payload="payload"
+    />
+    <PayloadNaked v-else :payload="payload" />
   </div>
 </template>
 

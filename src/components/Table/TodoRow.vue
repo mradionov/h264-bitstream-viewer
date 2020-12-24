@@ -1,6 +1,9 @@
 <template>
   <Row :class="$style.warn">
-    <Cell>TODO</Cell>
+    <Cell>
+      TODO
+      <span v-if="tag.length > 0"> ({{ tag }})</span>
+    </Cell>
     <Cell>
       Missing details. If you see this please
       <a
@@ -22,6 +25,13 @@ export default {
   components: {
     Cell,
     Row,
+  },
+
+  props: {
+    tag: {
+      type: String,
+      default: '',
+    },
   },
 };
 </script>

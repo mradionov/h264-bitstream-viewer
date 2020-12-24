@@ -16,13 +16,14 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .function("readNaked", &Reader::readNaked)
     .function("readPPS", &Reader::readPPS)
     .function("readSPS", &Reader::readSPS)
-    .function("readCodedSliceNonIDR", &Reader::readCodedSliceNonIDR)
+    .function("readSliceHeader", &Reader::readSliceHeader)
   ;
 
   initValueArray<int, 2>("array_int_2");
   initValueArray<int, 6>("array_int_6");
   initValueArray<int, 8>("array_int_8");
   initValueArray<int, 12>("array_int_12");
+  initValueArray<int, 64>("array_int_64");
   initValueArray<int, 96>("array_int_96");
   initValueArray<int, 128>("array_int_128");
   initValueArray<int, 256>("array_int_256");
@@ -157,7 +158,7 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
 
   using sps_vui_t = decltype(sps_t::vui);
 
-  emscripten::value_object<sps_vui_t>("sps_t::vui")
+  emscripten::value_object<sps_vui_t>("sps_vui_t")
     .field("aspect_ratio_info_present_flag", &sps_vui_t::aspect_ratio_info_present_flag)
     .field("aspect_ratio_idc", &sps_vui_t::aspect_ratio_idc)
     .field("sar_width", &sps_vui_t::sar_width)
@@ -219,5 +220,81 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .field("slice_alpha_c0_offset_div2", &slice_header_t::slice_alpha_c0_offset_div2)
     .field("slice_beta_offset_div2", &slice_header_t::slice_beta_offset_div2)
     .field("slice_group_change_cycle", &slice_header_t::slice_group_change_cycle)
+    .field("rplr", &slice_header_t::rplr)
+    .field("drpm", &slice_header_t::drpm)
+    .field("pwt", &slice_header_t::pwt)
+  ;
+
+  using rplr_t = decltype(slice_header_t::rplr);
+
+  emscripten::value_object<rplr_t>("rplr_t")
+    .field("ref_pic_list_reordering_flag_l0", &rplr_t::ref_pic_list_reordering_flag_l0)
+    .field("reorder_l0", &rplr_t::reorder_l0)
+    .field("ref_pic_list_reordering_flag_l1", &rplr_t::ref_pic_list_reordering_flag_l1)
+    .field("reorder_l1", &rplr_t::reorder_l1)
+  ;
+
+  using rplr_reorder_l0_t = decltype(rplr_t::reorder_l0);
+
+  emscripten::value_object<rplr_reorder_l0_t>("rplr_reorder_l0_t")
+    .field("reordering_of_pic_nums_idc", &rplr_reorder_l0_t::reordering_of_pic_nums_idc)
+    .field("abs_diff_pic_num_minus1", &rplr_reorder_l0_t::abs_diff_pic_num_minus1)
+    .field("long_term_pic_num", &rplr_reorder_l0_t::long_term_pic_num)
+  ;
+
+  using rplr_reorder_l1_t = decltype(rplr_t::reorder_l1);
+
+  emscripten::value_object<rplr_reorder_l1_t>("rplr_reorder_l1_t")
+    .field("reordering_of_pic_nums_idc", &rplr_reorder_l1_t::reordering_of_pic_nums_idc)
+    .field("abs_diff_pic_num_minus1", &rplr_reorder_l1_t::abs_diff_pic_num_minus1)
+    .field("long_term_pic_num", &rplr_reorder_l1_t::long_term_pic_num)
+  ;
+
+  using drpm_t = decltype(slice_header_t::drpm);
+
+  emscripten::value_object<drpm_t>("drpm_t")
+    .field("no_output_of_prior_pics_flag", &drpm_t::no_output_of_prior_pics_flag)
+    .field("long_term_reference_flag", &drpm_t::long_term_reference_flag)
+    .field("adaptive_ref_pic_marking_mode_flag", &drpm_t::adaptive_ref_pic_marking_mode_flag)
+    .field("memory_management_control_operation", &drpm_t::memory_management_control_operation)
+    .field("difference_of_pic_nums_minus1", &drpm_t::difference_of_pic_nums_minus1)
+    .field("long_term_pic_num", &drpm_t::long_term_pic_num)
+    .field("long_term_frame_idx", &drpm_t::long_term_frame_idx)
+    .field("max_long_term_frame_idx_plus1", &drpm_t::max_long_term_frame_idx_plus1)
+  ;
+
+  using pwt_t = decltype(slice_header_t::pwt);
+
+  emscripten::value_object<pwt_t>("pwt_t")
+    .field("luma_log2_weight_denom", &pwt_t::luma_log2_weight_denom)
+    .field("chroma_log2_weight_denom", &pwt_t::chroma_log2_weight_denom)
+    .field("luma_weight_l0_flag", &pwt_t::luma_weight_l0_flag)
+    .field("luma_weight_l0", &pwt_t::luma_weight_l0)
+    .field("luma_offset_l0", &pwt_t::luma_offset_l0)
+    .field("chroma_weight_l0_flag", &pwt_t::chroma_weight_l0_flag)
+    .field(
+      "chroma_weight_l0",
+      &readArray2d<int, 64, 2, int[64][2], pwt_t, &pwt_t::chroma_weight_l0>,
+      &writeArray2d<int, 64, 2, pwt_t>
+    )
+    .field(
+      "chroma_offset_l0",
+      &readArray2d<int, 64, 2, int[64][2], pwt_t, &pwt_t::chroma_offset_l0>,
+      &writeArray2d<int, 64, 2, pwt_t>
+    )
+    .field("luma_weight_l1_flag", &pwt_t::luma_weight_l1_flag)
+    .field("luma_weight_l1", &pwt_t::luma_weight_l1)
+    .field("luma_offset_l1", &pwt_t::luma_offset_l1)
+    .field("chroma_weight_l1_flag", &pwt_t::chroma_weight_l1_flag)
+    .field(
+      "chroma_weight_l1",
+      &readArray2d<int, 64, 2, int[64][2], pwt_t, &pwt_t::chroma_weight_l1>,
+      &writeArray2d<int, 64, 2, pwt_t>
+    )
+    .field(
+      "chroma_offset_l1",
+      &readArray2d<int, 64, 2, int[64][2], pwt_t, &pwt_t::chroma_offset_l1>,
+      &writeArray2d<int, 64, 2, pwt_t>
+    )
   ;
 };

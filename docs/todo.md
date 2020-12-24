@@ -4,3 +4,4 @@
 - expand/collapse nested payload structures
 - improve navigation
   - filter by unit type
+- navigate headers using keyboard arrows?

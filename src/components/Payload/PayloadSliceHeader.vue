@@ -104,8 +104,7 @@
         </template>
       </template>
     </template>
-    <!-- TODO read_debug_ref_pic_list_reordering -->
-    <TodoRow />
+    <RefPicListReordering :payload="payload" />
     <template
       v-if="
         (pps.weighted_pred_flag &&
@@ -115,12 +114,10 @@
             isSliceType(sh.slice_type, SLICE_TYPES.B))
       "
     >
-      <!-- TODO read_debug_pred_weight_table(h, b); -->
-      <TodoRow />
+      <PredWeightTable :payload="payload" />
     </template>
     <template v-if="header.refIdc !== 0">
-      <!-- TODO read_debug_dec_ref_pic_marking -->
-      <TodoRow />
+      <DecRefPicMarking :payload="payload" />
     </template>
     <template
       v-if="
@@ -187,9 +184,13 @@
 </template>
 
 <script>
+import { NALU_TYPES, SLICE_TYPES } from '../../lib';
+
 import { Table, Row, Cell, TodoRow } from '../Table';
 
-import { NALU_TYPES, SLICE_TYPES } from '../../lib';
+import DecRefPicMarking from './DecRefPicMarking';
+import PredWeightTable from './PredWeightTable';
+import RefPicListReordering from './RefPicListReordering';
 
 export default {
   components: {
@@ -197,6 +198,9 @@ export default {
     Row,
     Cell,
     TodoRow,
+    PredWeightTable,
+    RefPicListReordering,
+    DecRefPicMarking,
   },
 
   props: {

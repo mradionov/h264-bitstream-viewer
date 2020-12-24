@@ -102,7 +102,7 @@
         </Row>
       </template>
       <template v-if="sps.pic_order_cnt_type === 1">
-        <TodoRow />
+        <TodoRow tag="sps.pic_order_cnt_type === 1" />
         <!--
         TODO
         int delta_pic_order_always_zero_flag;
@@ -271,7 +271,7 @@
         <Cell>{{ vui.nal_hrd_parameters_present_flag }}</Cell>
       </Row>
       <template v-if="vui.nal_hrd_parameters_present_flag">
-        <TodoRow />
+        <TodoRow tag="vui.nal_hrd_parameters_present_flag" />
         <!-- TODO read_debug_hrd_parameters(&sps->hrd_nal, b); -->
       </template>
       <Row>
@@ -279,7 +279,7 @@
         <Cell>{{ vui.vcl_hrd_parameters_present_flag }}</Cell>
       </Row>
       <template v-if="vui.vcl_hrd_parameters_present_flag">
-        <TodoRow />
+        <TodoRow tag="vui.vcl_hrd_parameters_present_flag" />
         <!-- TODO read_debug_hrd_parameters(&sps->hrd_vcl, b); -->
       </template>
       <template
