@@ -9,6 +9,7 @@ const MAP_TYPE_TO_METHOD_NAME = {
   [NALU_TYPES.CODED_SLICE_NON_IDR]: 'readSliceHeader',
   [NALU_TYPES.CODED_SLICE_AUX]: 'readSliceHeader',
   [NALU_TYPES.CODED_SLICE_SVC_EXTENSION]: 'readSliceHeader',
+  [NALU_TYPES.SUBSET_SPS]: 'readSPSSubset',
 };
 
 const STATE = {
@@ -55,6 +56,8 @@ export class H264BitstreamBinding extends EventEmitter {
       payload = await this.readSliceHeader(header, data);
     } else if (header.type === NALU_TYPES.CODED_SLICE_SVC_EXTENSION) {
       payload = await this.readSliceHeader(header, data);
+    } else if (header.type === NALU_TYPES.SUBSET_SPS) {
+      payload.sps_subset = await this.readByType(header, data);
     } else {
       payload.naked = this.readNaked(header.type, data);
     }
@@ -123,6 +126,7 @@ export class H264BitstreamBinding extends EventEmitter {
     return {
       header,
       sps: null,
+      sps_subset: null,
       pps: null,
       sh: null,
       sei: null,

@@ -19,6 +19,7 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .function("readSPS", &Reader::readSPS)
     .function("readSEI", &Reader::readSEI)
     .function("readSliceHeader", &Reader::readSliceHeader)
+    .function("readSPSSubset", &Reader::readSPSSubset)
   ;
 
   initValueArray<int, 2>("array_int_2");
@@ -31,7 +32,7 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
   initValueArray<int, 256>("array_int_256");
   initValueArray<int, 384>("array_int_384");
 
-  emscripten::register_vector<vec_sei_t>("vector_sei");
+  emscripten::register_vector<bind_sei_t>("vector_bind_sei");
   emscripten::register_vector<uint8_t>("vector_uint8");
 
   emscripten::value_object<pps_t>("pps_t")
@@ -303,9 +304,32 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     )
   ;
 
-  emscripten::value_object<vec_sei_t>("vec_sei_t")
-    .field("payloadType", &vec_sei_t::payloadType)
-    .field("payloadSize", &vec_sei_t::payloadSize)
-    .field("data", &vec_sei_t::data)
+  emscripten::value_object<bind_sei_t>("bind_sei_t")
+    .field("payloadType", &bind_sei_t::payloadType)
+    .field("payloadSize", &bind_sei_t::payloadSize)
+    .field("data", &bind_sei_t::data)
+  ;
+
+  emscripten::value_object<bind_sps_subset_t>("bind_sps_subset_t")
+    .field("additional_extension2_flag", &bind_sps_subset_t::additional_extension2_flag)
+    .field("sps", &bind_sps_subset_t::sps)
+    .field("sps_svc_ext", &bind_sps_subset_t::sps_svc_ext)
+  ;
+
+  emscripten::value_object<sps_svc_ext_t>("sps_svc_ext_t")
+    .field("inter_layer_deblocking_filter_control_present_flag", &sps_svc_ext_t::inter_layer_deblocking_filter_control_present_flag)
+    .field("extended_spatial_scalability_idc", &sps_svc_ext_t::extended_spatial_scalability_idc)
+    .field("chroma_phase_x_plus1_flag", &sps_svc_ext_t::chroma_phase_x_plus1_flag)
+    .field("chroma_phase_y_plus1", &sps_svc_ext_t::chroma_phase_y_plus1)
+    .field("seq_ref_layer_chroma_phase_x_plus1_flag", &sps_svc_ext_t::seq_ref_layer_chroma_phase_x_plus1_flag)
+    .field("seq_ref_layer_chroma_phase_y_plus1", &sps_svc_ext_t::seq_ref_layer_chroma_phase_y_plus1)
+    .field("seq_scaled_ref_layer_left_offset", &sps_svc_ext_t::seq_scaled_ref_layer_left_offset)
+    .field("seq_scaled_ref_layer_top_offset", &sps_svc_ext_t::seq_scaled_ref_layer_top_offset)
+    .field("seq_scaled_ref_layer_right_offset", &sps_svc_ext_t::seq_scaled_ref_layer_right_offset)
+    .field("seq_scaled_ref_layer_bottom_offset", &sps_svc_ext_t::seq_scaled_ref_layer_bottom_offset)
+    .field("seq_tcoeff_level_prediction_flag", &sps_svc_ext_t::seq_tcoeff_level_prediction_flag)
+    .field("adaptive_tcoeff_level_prediction_flag", &sps_svc_ext_t::adaptive_tcoeff_level_prediction_flag)
+    .field("slice_header_restriction_flag", &sps_svc_ext_t::slice_header_restriction_flag)
+    .field("svc_vui_parameters_present_flag", &sps_svc_ext_t::svc_vui_parameters_present_flag)
   ;
 };

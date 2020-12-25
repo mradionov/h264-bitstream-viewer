@@ -38,7 +38,7 @@
               <Payload :payload="payload" />
             </UiTab>
             <UiTab title="NAL">
-              <TabUnit :number="this.selectedNumber" :header="selectedHeader" />
+              <TabUnit :number="this.selectedIndex" :header="selectedHeader" />
             </UiTab>
           </UiTabs>
         </div>
@@ -105,7 +105,7 @@ export default {
       if (this.selectedIndex === -1) {
         return -1;
       }
-      return this.selectedIndex + 1;
+      return this.selectedIndex;
     },
     selectedHeader() {
       const noHeader = {

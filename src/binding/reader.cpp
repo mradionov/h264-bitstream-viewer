@@ -24,7 +24,7 @@ std::string Reader::readNaked(uintptr_t input, int size) {
     buf[i] = (uint8_t) (data[i] & 0xff);
   }
 
-  int ret = read_nal_unit(m_h264_stream, buf, size);
+  read_nal_unit(m_h264_stream, buf, size);
 
   std::stringstream ss;
 
@@ -44,7 +44,7 @@ pps_t Reader::readPPS(uintptr_t input, int size) {
     buf[i] = (uint8_t) (data[i] & 0xff);
   }
 
-  int ret = read_nal_unit(m_h264_stream, buf, size);
+  read_nal_unit(m_h264_stream, buf, size);
 
   pps_t pps = *(m_h264_stream->pps);
 
@@ -62,7 +62,7 @@ sps_t Reader::readSPS(uintptr_t input, int size) {
     buf[i] = (uint8_t) (data[i] & 0xff);
   }
 
-  int ret = read_nal_unit(m_h264_stream, buf, size);
+  read_nal_unit(m_h264_stream, buf, size);
 
   sps_t sps = *(m_h264_stream->sps);
 
@@ -80,7 +80,7 @@ slice_header_t Reader::readSliceHeader(uintptr_t input, int size) {
     buf[i] = (uint8_t) (data[i] & 0xff);
   }
 
-  int ret = read_nal_unit(m_h264_stream, buf, size);
+  read_nal_unit(m_h264_stream, buf, size);
 
   slice_header_t sh = *(m_h264_stream->sh);
 
@@ -89,7 +89,7 @@ slice_header_t Reader::readSliceHeader(uintptr_t input, int size) {
   return sh;
 }
 
-std::vector<vec_sei_t> Reader::readSEI(uintptr_t input, int size) {
+std::vector<bind_sei_t> Reader::readSEI(uintptr_t input, int size) {
   const int32_t* data = reinterpret_cast<int32_t*>(input);
 
   uint8_t* buf = new uint8_t[size];
@@ -98,9 +98,9 @@ std::vector<vec_sei_t> Reader::readSEI(uintptr_t input, int size) {
     buf[i] = (uint8_t) (data[i] & 0xff);
   }
 
-  int ret = read_nal_unit(m_h264_stream, buf, size);
+  read_nal_unit(m_h264_stream, buf, size);
 
-  std::vector<vec_sei_t> result(m_h264_stream->num_seis);
+  std::vector<bind_sei_t> result(m_h264_stream->num_seis);
 
   for (int i = 0; i < m_h264_stream->num_seis; i++) {
     sei_t* s = m_h264_stream->seis[i];
@@ -111,4 +111,27 @@ std::vector<vec_sei_t> Reader::readSEI(uintptr_t input, int size) {
   }
 
   return result;
+}
+
+bind_sps_subset_t Reader::readSPSSubset(uintptr_t input, int size) {
+  const int32_t* data = reinterpret_cast<int32_t*>(input);
+
+  uint8_t* buf = new uint8_t[size];
+
+  for (int i = 0; i < size; i += 1) {
+    buf[i] = (uint8_t) (data[i] & 0xff);
+  }
+
+  read_nal_unit(m_h264_stream, buf, size);
+
+  sps_subset_t* sps_subset = m_h264_stream->sps_subset;
+
+  bind_sps_subset_t bind_sps_subset;
+  bind_sps_subset.sps = *(sps_subset->sps);
+  bind_sps_subset.additional_extension2_flag = sps_subset->additional_extension2_flag;
+  bind_sps_subset.sps_svc_ext = *(sps_subset->sps_svc_ext);
+
+  delete [] buf;
+
+  return bind_sps_subset;
 }

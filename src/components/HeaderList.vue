@@ -1,10 +1,10 @@
 <template>
   <Table>
     <HeaderRow slot="header">
-      <HeaderCell>#</HeaderCell>
-      <HeaderCell colspan="2">Unit type</HeaderCell>
-      <HeaderCell>Reference idc</HeaderCell>
-      <HeaderCell>Forbidden zero bit</HeaderCell>
+      <HeaderCell sticky>#</HeaderCell>
+      <HeaderCell sticky colspan="2">Unit type</HeaderCell>
+      <HeaderCell sticky>Reference idc</HeaderCell>
+      <HeaderCell sticky>Forbidden zero bit</HeaderCell>
     </HeaderRow>
     <Row
       v-for="(header, index) in headers"
@@ -12,7 +12,7 @@
       :class="[$style.row, isSelected(index) && $style.selected]"
       @click.native="handleRowClick(header, index)"
     >
-      <Cell>{{ index + indexOffset + 1 }}</Cell>
+      <Cell>{{ index + indexOffset }}</Cell>
       <Cell>
         <strong>{{ header.type }}</strong>
       </Cell>

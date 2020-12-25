@@ -16,7 +16,8 @@ public:
   pps_t readPPS(uintptr_t input, int size);
   sps_t readSPS(uintptr_t input, int size);
   slice_header_t readSliceHeader(uintptr_t input, int size);
-  std::vector<vec_sei_t> readSEI(uintptr_t input, int size);
+  std::vector<bind_sei_t> readSEI(uintptr_t input, int size);
+  bind_sps_subset_t readSPSSubset(uintptr_t input, int size);
 private:
   h264_stream_t* m_h264_stream;
 };

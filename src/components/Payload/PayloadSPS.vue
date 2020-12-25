@@ -1,6 +1,9 @@
 <template>
   <div>
     <Table>
+      <HeaderRow>
+        <HeaderCell>SPS</HeaderCell>
+      </HeaderRow>
       <Row>
         <Cell>profile_idc</Cell>
         <Cell>{{ sps.profile_idc }}</Cell>
@@ -354,9 +357,6 @@ export default {
   },
 
   computed: {
-    sps() {
-      return this.payload.sps;
-    },
     vui() {
       return this.sps.vui;
     },
@@ -387,10 +387,7 @@ export default {
   },
 
   props: {
-    payload: {
-      type: Object,
-      default: () => {},
-    },
+    sps: Object,
   },
 };
 </script>

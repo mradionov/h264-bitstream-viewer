@@ -6,7 +6,7 @@
     />
     <PayloadSPS
       v-else-if="payload.header.type === NALU_TYPES.SPS"
-      :payload="payload"
+      :sps="payload.sps"
     />
     <PayloadSliceHeader
       v-else-if="
@@ -24,6 +24,10 @@
       v-else-if="payload.header.type === NALU_TYPES.CODED_SLICE_SVC_EXTENSION"
       :payload="payload"
     />
+    <PayloadSPSSubset
+      v-else-if="payload.header.type === NALU_TYPES.SUBSET_SPS"
+      :sps_subset="payload.sps_subset"
+    />
     <PayloadNaked v-else-if="payload.naked.length > 0" :payload="payload" />
     <PayloadMissing v-else :payload="payload" />
   </div>
@@ -36,6 +40,7 @@ import PayloadSPS from './PayloadSPS';
 import PayloadPPS from './PayloadPPS';
 import PayloadSEI from './PayloadSEI';
 import PayloadSliceHeader from './PayloadSliceHeader';
+import PayloadSPSSubset from './PayloadSPSSubset';
 import PayloadMissing from './PayloadMissing';
 import PayloadNaked from './PayloadNaked';
 
@@ -45,6 +50,7 @@ export default {
     PayloadPPS,
     PayloadSEI,
     PayloadSliceHeader,
+    PayloadSPSSubset,
     PayloadNaked,
     PayloadMissing,
   },
