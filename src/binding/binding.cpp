@@ -20,6 +20,8 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .function("readSEI", &Reader::readSEI)
     .function("readSliceHeader", &Reader::readSliceHeader)
     .function("readSPSSubset", &Reader::readSPSSubset)
+    .function("readPrefixNAL", &Reader::readPrefixNAL)
+    .function("readNALHeaderSVCEXT", &Reader::readNALHeaderSVCEXT)
   ;
 
   initValueArray<int, 2>("array_int_2");
@@ -331,5 +333,28 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .field("adaptive_tcoeff_level_prediction_flag", &sps_svc_ext_t::adaptive_tcoeff_level_prediction_flag)
     .field("slice_header_restriction_flag", &sps_svc_ext_t::slice_header_restriction_flag)
     .field("svc_vui_parameters_present_flag", &sps_svc_ext_t::svc_vui_parameters_present_flag)
+  ;
+
+  emscripten::value_object<prefix_nal_svc_t>("prefix_nal_svc_t")
+    .field("store_ref_base_pic_flag", &prefix_nal_svc_t::store_ref_base_pic_flag)
+    .field("additional_prefix_nal_unit_extension_flag", &prefix_nal_svc_t::additional_prefix_nal_unit_extension_flag)
+    .field("additional_prefix_nal_unit_extension_data_flag", &prefix_nal_svc_t::additional_prefix_nal_unit_extension_data_flag)
+    .field("adaptive_ref_base_pic_marking_mode_flag", &prefix_nal_svc_t::adaptive_ref_base_pic_marking_mode_flag)
+    .field("memory_management_base_control_operation", &prefix_nal_svc_t::memory_management_base_control_operation)
+    .field("difference_of_base_pic_nums_minus1", &prefix_nal_svc_t::difference_of_base_pic_nums_minus1)
+    .field("long_term_base_pic_num", &prefix_nal_svc_t::long_term_base_pic_num)
+  ;
+
+  emscripten::value_object<nal_svc_ext_t>("nal_svc_ext_t")
+    .field("idr_flag", &nal_svc_ext_t::idr_flag)
+    .field("priority_id", &nal_svc_ext_t::priority_id)
+    .field("no_inter_layer_pred_flag", &nal_svc_ext_t::no_inter_layer_pred_flag)
+    .field("dependency_id", &nal_svc_ext_t::dependency_id)
+    .field("quality_id", &nal_svc_ext_t::quality_id)
+    .field("temporal_id", &nal_svc_ext_t::temporal_id)
+    .field("use_ref_base_pic_flag", &nal_svc_ext_t::use_ref_base_pic_flag)
+    .field("discardable_flag", &nal_svc_ext_t::discardable_flag)
+    .field("output_flag", &nal_svc_ext_t::output_flag)
+    .field("reserved_three_2bits", &nal_svc_ext_t::reserved_three_2bits)
   ;
 };

@@ -1,5 +1,10 @@
 <template>
   <Table>
+    <HeaderRow>
+      <HeaderCell colspan="2">
+        Slice Header
+      </HeaderCell>
+    </HeaderRow>
     <Row>
       <Cell>first_mb_in_slice</Cell>
       <Cell>{{ sh.first_mb_in_slice }}</Cell>
@@ -186,7 +191,7 @@
 <script>
 import { NALU_TYPES, SLICE_TYPES } from '../../lib';
 
-import { Table, Row, Cell, TodoRow } from '../Table';
+import { Table, Row, Cell, HeaderRow, HeaderCell, TodoRow } from '../Table';
 
 import DecRefPicMarking from './DecRefPicMarking';
 import PredWeightTable from './PredWeightTable';
@@ -197,6 +202,8 @@ export default {
     Table,
     Row,
     Cell,
+    HeaderRow,
+    HeaderCell,
     TodoRow,
     PredWeightTable,
     RefPicListReordering,

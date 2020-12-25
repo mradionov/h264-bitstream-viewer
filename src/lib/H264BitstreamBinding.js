@@ -10,6 +10,7 @@ const MAP_TYPE_TO_METHOD_NAME = {
   [NALU_TYPES.CODED_SLICE_AUX]: 'readSliceHeader',
   [NALU_TYPES.CODED_SLICE_SVC_EXTENSION]: 'readSliceHeader',
   [NALU_TYPES.SUBSET_SPS]: 'readSPSSubset',
+  [NALU_TYPES.PREFIX_NAL]: 'readPrefixNAL',
 };
 
 const STATE = {
@@ -58,8 +59,18 @@ export class H264BitstreamBinding extends EventEmitter {
       payload = await this.readSliceHeader(header, data);
     } else if (header.type === NALU_TYPES.SUBSET_SPS) {
       payload.sps_subset = await this.readByType(header, data);
+    } else if (header.type == NALU_TYPES.PREFIX_NAL) {
+      payload.prefix_nal_svc = await this.readByType(header, data);
     } else {
       payload.naked = this.readNaked(header.type, data);
+    }
+
+    if (
+      header.type === NALU_TYPES.PREFIX_NAL ||
+      header.type === NALU_TYPES.CODED_SLICE_SVC_EXTENSION ||
+      header.type === 21
+    ) {
+      payload.nal_svc_ext = this.readNALHeaderSVCEXT(header, data);
     }
 
     return payload;
@@ -91,6 +102,10 @@ export class H264BitstreamBinding extends EventEmitter {
     payload.sh = this.readByType(header, data);
 
     return payload;
+  }
+
+  readNALHeaderSVCEXT(header, data) {
+    return this.invokeBindingMethod('readNALHeaderSVCEXT', data);
   }
 
   readByType(header, data) {
@@ -130,6 +145,8 @@ export class H264BitstreamBinding extends EventEmitter {
       pps: null,
       sh: null,
       sei: null,
+      prefix_nal_svc: null,
+      nal_svc_ext: null,
       naked: '',
     };
   }

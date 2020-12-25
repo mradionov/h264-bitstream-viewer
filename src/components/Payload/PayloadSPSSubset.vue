@@ -104,8 +104,6 @@
 </template>
 
 <script>
-import { PROFILE_IDC, SAR } from '../../lib';
-
 import { Table, Row, Cell, HeaderRow, HeaderCell, TodoRow } from '../Table';
 
 import PayloadSPS from './PayloadSPS';
