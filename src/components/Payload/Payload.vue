@@ -24,26 +24,29 @@
       v-else-if="payload.header.type === NALU_TYPES.CODED_SLICE_SVC_EXTENSION"
       :payload="payload"
     />
-    <PayloadNaked v-else :payload="payload" />
+    <PayloadNaked v-else-if="payload.naked.length > 0" :payload="payload" />
+    <PayloadMissing v-else :payload="payload" />
   </div>
 </template>
 
 <script>
 import { NALU_TYPES } from '../../lib';
 
-import PayloadNaked from './PayloadNaked';
 import PayloadSPS from './PayloadSPS';
 import PayloadPPS from './PayloadPPS';
 import PayloadSEI from './PayloadSEI';
 import PayloadSliceHeader from './PayloadSliceHeader';
+import PayloadMissing from './PayloadMissing';
+import PayloadNaked from './PayloadNaked';
 
 export default {
   components: {
-    PayloadNaked,
     PayloadSPS,
     PayloadPPS,
     PayloadSEI,
     PayloadSliceHeader,
+    PayloadNaked,
+    PayloadMissing,
   },
 
   props: {

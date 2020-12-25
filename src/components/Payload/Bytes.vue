@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div :class="$style.header">
       <UiRadioGroup :options="options" v-model="selectedValue" name="options" />
     </div>
     <div>{{ output }}</div>
@@ -62,3 +62,11 @@ export default {
   },
 };
 </script>
+
+<style module>
+.header {
+  background: #eee;
+  margin-bottom: 10px;
+  padding: 1px 10px;
+}
+</style>

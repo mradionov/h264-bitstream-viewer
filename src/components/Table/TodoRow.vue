@@ -12,7 +12,11 @@
       >
         create an issue on the GitHub
       </a>
-      and provide your h264 for reproduction
+      and provide your h264 for reproduction. It will be fixed if
+      <a href="https://github.com/aizvorski/h264bitstream" target="_blank">
+        h264bitstream
+      </a>
+      has it implemented.
     </Cell>
   </Row>
 </template>

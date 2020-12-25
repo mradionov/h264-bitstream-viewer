@@ -2,7 +2,7 @@
   <div>
     <Table v-for="(v, i) in sei.size()" :key="i">
       <HeaderRow>
-        <HeaderCell> [{{ i }}] </HeaderCell>
+        <HeaderCell> SEI[{{ i }}] </HeaderCell>
         <HeaderCell>
           {{ sei.get(i).payloadType | seiTypeDisplayed }}
         </HeaderCell>
