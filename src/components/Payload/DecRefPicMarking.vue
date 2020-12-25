@@ -16,7 +16,46 @@
         <Cell>{{ drpm.adaptive_ref_pic_marking_mode_flag }}</Cell>
       </Row>
       <template v-if="drpm.adaptive_ref_pic_marking_mode_flag">
-        <TodoRow tag="drpm.adaptive_ref_pic_marking_mode_flag" />
+        <template v-for="(n, i) in mmco_size">
+          <Row>
+            <Cell>drpm.memory_management_control_operation[{{ i }}]</Cell>
+            <Cell>{{ drpm.memory_management_control_operation[i] }}</Cell>
+          </Row>
+          <template
+            v-if="
+              drpm.memory_management_control_operation[i] === 1 ||
+                drpm.memory_management_control_operation[i] === 3
+            "
+          >
+            <Row>
+              <Cell>drpm.difference_of_pic_nums_minus1[{{ i }}]</Cell>
+              <Cell>{{ drpm.difference_of_pic_nums_minus1[i] }}</Cell>
+            </Row>
+          </template>
+          <template v-if="drpm.memory_management_control_operation[i] === 2">
+            <Row>
+              <Cell>drpm.long_term_pic_num[{{ i }}]</Cell>
+              <Cell>{{ drpm.long_term_pic_num[i] }}</Cell>
+            </Row>
+          </template>
+          <template
+            v-if="
+              drpm.memory_management_control_operation[i] === 3 ||
+                drpm.memory_management_control_operation[i] === 6
+            "
+          >
+            <Row>
+              <Cell>drpm.long_term_frame_idx[{{ i }}]</Cell>
+              <Cell>{{ drpm.long_term_frame_idx[i] }}</Cell>
+            </Row>
+          </template>
+          <template v-if="drpm.memory_management_control_operation[i] === 4">
+            <Row>
+              <Cell>drpm.max_long_term_frame_idx_plus1[{{ i }}]</Cell>
+              <Cell>{{ drpm.max_long_term_frame_idx_plus1[i] }}</Cell>
+            </Row>
+          </template>
+        </template>
       </template>
     </template>
   </tbody>
@@ -55,6 +94,25 @@ export default {
     },
     drpm() {
       return this.sh.drpm;
+    },
+    mmco_size() {
+      const size = this.getSize(this.drpm.memory_management_control_operation);
+      if (size > 0) {
+        return size + 1;
+      }
+      return 0;
+    },
+  },
+
+  methods: {
+    getSize(field) {
+      let n = -1;
+
+      do {
+        n++;
+      } while (field[n] !== 0);
+
+      return n;
     },
   },
 };
