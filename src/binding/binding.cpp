@@ -7,6 +7,7 @@
 #include <h264_stream.h>
 
 #include "reader.h"
+#include "types.h"
 #include "value-array.h"
 
 EMSCRIPTEN_BINDINGS(H264Bitstream) {
@@ -16,6 +17,7 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .function("readNaked", &Reader::readNaked)
     .function("readPPS", &Reader::readPPS)
     .function("readSPS", &Reader::readSPS)
+    .function("readSEI", &Reader::readSEI)
     .function("readSliceHeader", &Reader::readSliceHeader)
   ;
 
@@ -28,6 +30,9 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
   initValueArray<int, 128>("array_int_128");
   initValueArray<int, 256>("array_int_256");
   initValueArray<int, 384>("array_int_384");
+
+  emscripten::register_vector<vec_sei_t>("vector_sei");
+  emscripten::register_vector<uint8_t>("vector_uint8");
 
   emscripten::value_object<pps_t>("pps_t")
     .field("pic_parameter_set_id", &pps_t::pic_parameter_set_id)
@@ -296,5 +301,11 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
       &readArray2d<int, 64, 2, int[64][2], pwt_t, &pwt_t::chroma_offset_l1>,
       &writeArray2d<int, 64, 2, pwt_t>
     )
+  ;
+
+  emscripten::value_object<vec_sei_t>("vec_sei_t")
+    .field("payloadType", &vec_sei_t::payloadType)
+    .field("payloadSize", &vec_sei_t::payloadSize)
+    .field("data", &vec_sei_t::data)
   ;
 };

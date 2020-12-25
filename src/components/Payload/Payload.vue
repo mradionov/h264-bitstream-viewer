@@ -16,6 +16,10 @@
       "
       :payload="payload"
     />
+    <PayloadSEI
+      v-else-if="payload.header.type === NALU_TYPES.SEI"
+      :payload="payload"
+    />
     <PayloadSliceHeader
       v-else-if="payload.header.type === NALU_TYPES.CODED_SLICE_SVC_EXTENSION"
       :payload="payload"
@@ -30,6 +34,7 @@ import { NALU_TYPES } from '../../lib';
 import PayloadNaked from './PayloadNaked';
 import PayloadSPS from './PayloadSPS';
 import PayloadPPS from './PayloadPPS';
+import PayloadSEI from './PayloadSEI';
 import PayloadSliceHeader from './PayloadSliceHeader';
 
 export default {
@@ -37,6 +42,7 @@ export default {
     PayloadNaked,
     PayloadSPS,
     PayloadPPS,
+    PayloadSEI,
     PayloadSliceHeader,
   },
 

@@ -1,6 +1,6 @@
 <template>
   <tbody>
-    <Row v-for="(deltaScale, i) in deltaScales">
+    <Row v-for="(deltaScale, i) in deltaScales" :key="i">
       <Cell>delta_scale[{{ i }}]</Cell>
       <Cell>{{ deltaScale }}</Cell>
     </Row>

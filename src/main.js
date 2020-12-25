@@ -9,6 +9,7 @@ import App from './components/App';
 import h264Helper from './helpers/h264Helper';
 
 Vue.filter('naluTypeDisplayed', h264Helper.naluTypeDisplayed);
+Vue.filter('seiTypeDisplayed', h264Helper.seiTypeDisplayed);
 
 const app = new Vue({
   render: (h) => h(App),

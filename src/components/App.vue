@@ -1,6 +1,10 @@
 <template>
   <div :class="$style.app">
-    <div v-if="isLoadingModule" :class="$style.loading">Loading...</div>
+    <div v-if="isLoadingModule" :class="$style.loading">
+      <div>Loading...</div>
+      <br />
+      <div>Please refresh the page, if it is not loading for a long time</div>
+    </div>
     <div v-else :class="$style.container">
       <div :class="$style.header">
         <div :class="$style.upload">

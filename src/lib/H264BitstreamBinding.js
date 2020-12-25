@@ -4,9 +4,10 @@ import { NALU_TYPES } from './H264BitstreamConstants';
 const MAP_TYPE_TO_METHOD_NAME = {
   [NALU_TYPES.PPS]: 'readPPS',
   [NALU_TYPES.SPS]: 'readSPS',
+  [NALU_TYPES.SEI]: 'readSEI',
   [NALU_TYPES.CODED_SLICE_IDR]: 'readSliceHeader',
   [NALU_TYPES.CODED_SLICE_NON_IDR]: 'readSliceHeader',
-  [NALU_TYPES.CODED_SLICE_AUR]: 'readSliceHeader',
+  [NALU_TYPES.CODED_SLICE_AUX]: 'readSliceHeader',
   [NALU_TYPES.CODED_SLICE_SVC_EXTENSION]: 'readSliceHeader',
 };
 
@@ -44,6 +45,8 @@ export class H264BitstreamBinding extends EventEmitter {
       payload.sps = this.readByType(header, data);
     } else if (header.type === NALU_TYPES.PPS) {
       payload.pps = this.readByType(header, data);
+    } else if (header.type === NALU_TYPES.SEI) {
+      payload.sei = this.readByType(header, data);
     } else if (
       header.type === NALU_TYPES.CODED_SLICE_IDR ||
       header.type === NALU_TYPES.CODED_SLICE_NON_IDR ||
@@ -122,6 +125,7 @@ export class H264BitstreamBinding extends EventEmitter {
       sps: null,
       pps: null,
       sh: null,
+      sei: null,
       naked: '',
     };
   }

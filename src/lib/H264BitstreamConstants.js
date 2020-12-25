@@ -47,20 +47,45 @@ export const SAR = {
 };
 
 export const SLICE_TYPES = {
-  P: 0, // P (P slice)
-  B: 1, // B (B slice)
-  I: 2, // I (I slice)
-  EP: 0, // EP (EP slice)
-  EB: 1, // EB (EB slice)
-  EI: 2, // EI (EI slice)
-  SP: 3, // SP (SP slice)
-  SI: 4, // SI (SI slice)
-  P_ONLY: 5, // P (P slice)
-  B_ONLY: 6, // B (B slice)
-  I_ONLY: 7, // I (I slice)
-  EP_ONLY: 5, // EP (EP slice)
-  EB_ONLY: 6, // EB (EB slice)
-  EI_ONLY: 7, // EI (EI slice)
-  SP_ONLY: 8, // SP (SP slice)
-  SI_ONLY: 9, // SI (SI slice)
+  P: 0,
+  B: 1,
+  I: 2,
+  EP: 0,
+  EB: 1,
+  EI: 2,
+  SP: 3,
+  SI: 4,
+  P_ONLY: 5,
+  B_ONLY: 6,
+  I_ONLY: 7,
+  EP_ONLY: 5,
+  EB_ONLY: 6,
+  EI_ONLY: 7,
+  SP_ONLY: 8,
+  SI_ONLY: 9,
+};
+
+export const SEI_TYPES = {
+  BUFFERING_PERIOD: 0,
+  PIC_TIMING: 1,
+  PAN_SCAN_RECT: 2,
+  FILLER_PAYLOAD: 3,
+  USER_DATA_REGISTERED_ITU_T_T35: 4,
+  USER_DATA_UNREGISTERED: 5,
+  RECOVERY_POINT: 6,
+  DEC_REF_PIC_MARKING_REPETITION: 7,
+  SPARE_PIC: 8,
+  SCENE_INFO: 9,
+  SUB_SEQ_INFO: 10,
+  SUB_SEQ_LAYER_CHARACTERISTICS: 11,
+  SUB_SEQ_CHARACTERISTICS: 12,
+  FULL_FRAME_FREEZE: 13,
+  FULL_FRAME_FREEZE_RELEASE: 14,
+  FULL_FRAME_SNAPSHOT: 15,
+  PROGRESSIVE_REFINEMENT_SEGMENT_START: 16,
+  PROGRESSIVE_REFINEMENT_SEGMENT_END: 17,
+  MOTION_CONSTRAINED_SLICE_GROUP_SET: 18,
+  FILM_GRAIN_CHARACTERISTICS: 19,
+  DEBLOCKING_FILTER_DISPLAY_PREFERENCE: 20,
+  STEREO_VIDEO_INFO: 21,
 };

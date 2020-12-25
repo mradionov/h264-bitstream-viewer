@@ -7,5 +7,6 @@
 <style module>
 .cell {
   padding: 5px;
+  vertical-align: top;
 }
 </style>
