@@ -14,7 +14,6 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
 
   emscripten::class_<Reader>("Reader")
     .constructor<>()
-    .function("readNaked", &Reader::readNaked)
     .function("readPPS", &Reader::readPPS)
     .function("readSPS", &Reader::readSPS)
     .function("readSEI", &Reader::readSEI)

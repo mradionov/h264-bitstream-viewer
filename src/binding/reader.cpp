@@ -3,7 +3,6 @@
 
 #include <h264_stream.h>
 
-#include "h264naked-print.h"
 #include "reader.h"
 #include "types.h"
 
@@ -13,26 +12,6 @@ Reader::Reader() {
 
 Reader::~Reader() {
   h264_free(m_h264_stream);
-}
-
-std::string Reader::readNaked(uintptr_t input, int size) {
-  const int32_t* data = reinterpret_cast<int32_t*>(input);
-
-  uint8_t* buf = new uint8_t[size];
-
-  for (int i = 0; i < size; i += 1) {
-    buf[i] = (uint8_t) (data[i] & 0xff);
-  }
-
-  read_nal_unit(m_h264_stream, buf, size);
-
-  std::stringstream ss;
-
-  print_nal(ss, m_h264_stream, m_h264_stream->nal);
-
-  delete [] buf;
-
-  return ss.str();
 }
 
 pps_t Reader::readPPS(uintptr_t input, int size) {

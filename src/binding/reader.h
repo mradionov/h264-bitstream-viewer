@@ -12,7 +12,6 @@ class Reader {
 public:
   Reader();
   ~Reader();
-  std::string readNaked(uintptr_t input, int size);
   pps_t readPPS(uintptr_t input, int size);
   sps_t readSPS(uintptr_t input, int size);
   aud_t readAUD(uintptr_t input, int size);

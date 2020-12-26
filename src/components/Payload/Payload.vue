@@ -32,7 +32,6 @@
       :payload="payload"
     />
     <PayloadAUD v-else-if="type === NALU_TYPES.AUD" :payload="payload" />
-    <PayloadNaked v-else-if="payload.naked.length > 0" :payload="payload" />
     <PayloadMissing v-else :payload="payload" />
   </div>
 </template>
@@ -49,7 +48,6 @@ import PayloadSliceHeader from './PayloadSliceHeader';
 import PayloadSPSSubset from './PayloadSPSSubset';
 import PayloadPrefixNAL from './PayloadPrefixNAL';
 import PayloadMissing from './PayloadMissing';
-import PayloadNaked from './PayloadNaked';
 
 export default {
   components: {
@@ -61,7 +59,6 @@ export default {
     PayloadSliceHeader,
     PayloadSPSSubset,
     PayloadPrefixNAL,
-    PayloadNaked,
     PayloadMissing,
   },
 
@@ -82,5 +79,3 @@ export default {
   },
 };
 </script>
-
-<style module></style>
