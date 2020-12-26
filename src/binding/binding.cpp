@@ -29,6 +29,7 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
   initValueArray<int, 6>("array_int_6");
   initValueArray<int, 8>("array_int_8");
   initValueArray<int, 12>("array_int_12");
+  initValueArray<int, 32>("array_int_32");
   initValueArray<int, 64>("array_int_64");
   initValueArray<int, 96>("array_int_96");
   initValueArray<int, 128>("array_int_128");
@@ -202,7 +203,18 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .field("max_dec_frame_buffering", &sps_vui_t::max_dec_frame_buffering)
   ;
 
-  emscripten::value_object<hrd_t>("hrd_t");
+  emscripten::value_object<hrd_t>("hrd_t")
+    .field("cpb_cnt_minus1", &hrd_t::cpb_cnt_minus1)
+    .field("bit_rate_scale", &hrd_t::bit_rate_scale)
+    .field("cpb_size_scale", &hrd_t::cpb_size_scale)
+    .field("bit_rate_value_minus1", &hrd_t::bit_rate_value_minus1)
+    .field("cpb_size_value_minus1", &hrd_t::cpb_size_value_minus1)
+    .field("cbr_flag", &hrd_t::cbr_flag)
+    .field("initial_cpb_removal_delay_length_minus1", &hrd_t::initial_cpb_removal_delay_length_minus1)
+    .field("cpb_removal_delay_length_minus1", &hrd_t::cpb_removal_delay_length_minus1)
+    .field("dpb_output_delay_length_minus1", &hrd_t::dpb_output_delay_length_minus1)
+    .field("time_offset_length", &hrd_t::time_offset_length)
+  ;
 
   emscripten::value_object<slice_header_t>("slice_header_t")
     .field("first_mb_in_slice", &slice_header_t::first_mb_in_slice)

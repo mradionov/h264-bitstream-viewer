@@ -274,16 +274,14 @@
         <Cell>{{ vui.nal_hrd_parameters_present_flag }}</Cell>
       </Row>
       <template v-if="vui.nal_hrd_parameters_present_flag">
-        <TodoRow tag="vui.nal_hrd_parameters_present_flag" />
-        <!-- TODO read_debug_hrd_parameters(&sps->hrd_nal, b); -->
+        <HrdParameters :hrd="sps.hrd_nal" />
       </template>
       <Row>
         <Cell>vcl_hrd_parameters_present_flag</Cell>
         <Cell>{{ vui.vcl_hrd_parameters_present_flag }}</Cell>
       </Row>
       <template v-if="vui.vcl_hrd_parameters_present_flag">
-        <TodoRow tag="vui.vcl_hrd_parameters_present_flag" />
-        <!-- TODO read_debug_hrd_parameters(&sps->hrd_vcl, b); -->
+        <HrdParameters :hrd="sps.hrd_vcl" />
       </template>
       <template
         v-if="
@@ -343,6 +341,7 @@ import { PROFILE_IDC, SAR } from '../../lib';
 
 import { Table, Row, Cell, HeaderRow, HeaderCell, TodoRow } from '../Table';
 
+import HrdParameters from './HrdParameters';
 import ScalingList from './ScalingList';
 
 export default {
@@ -353,6 +352,7 @@ export default {
     HeaderRow,
     HeaderCell,
     TodoRow,
+    HrdParameters,
     ScalingList,
   },
 
