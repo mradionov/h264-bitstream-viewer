@@ -1,24 +1,24 @@
 <template>
   <Table>
     <HeaderRow slot="header">
-      <HeaderCell>#</HeaderCell>
-      <HeaderCell colspan="2">Unit type</HeaderCell>
-      <HeaderCell>Reference idc</HeaderCell>
-      <HeaderCell>Forbidden zero bit</HeaderCell>
+      <HeaderCell sticky>#</HeaderCell>
+      <HeaderCell sticky colspan="2">Unit type</HeaderCell>
+      <HeaderCell sticky>Reference idc</HeaderCell>
+      <HeaderCell sticky>Forbidden zero bit</HeaderCell>
     </HeaderRow>
     <Row
-      v-for="(unitHeader, index) in unitHeaders"
+      v-for="(header, index) in headers"
       :key="index"
       :class="[$style.row, isSelected(index) && $style.selected]"
-      @click.native="handleRowClick(unitHeader, index)"
+      @click.native="handleRowClick(header, index)"
     >
-      <Cell>{{ index + indexOffset + 1 }}</Cell>
+      <Cell>{{ index + indexOffset }}</Cell>
       <Cell>
-        <strong>{{ unitHeader.type }}</strong>
+        <strong>{{ header.type }}</strong>
       </Cell>
-      <Cell>{{ unitHeader.type | nalTypeDisplayed }}</Cell>
-      <Cell>{{ unitHeader.refIdc }}</Cell>
-      <Cell>{{ unitHeader.forbiddenZeroBit }}</Cell>
+      <Cell>{{ header.type | naluTypeDisplayed }}</Cell>
+      <Cell>{{ header.refIdc }}</Cell>
+      <Cell>{{ header.forbiddenZeroBit }}</Cell>
     </Row>
   </Table>
 </template>
@@ -44,7 +44,7 @@ export default {
       type: Number,
       default: -1,
     },
-    unitHeaders: {
+    headers: {
       type: Array,
       default: () => [],
     },
@@ -57,7 +57,6 @@ export default {
     isSelected(index) {
       return this.selectedIndex === this.getThruIndex(index);
     },
-
     handleRowClick(unitHeader, index) {
       if (this.isSelected(index)) {
         return;

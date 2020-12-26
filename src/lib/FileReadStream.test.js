@@ -1,7 +1,7 @@
 import avaTest from 'ava';
 import ninos from 'ninos';
 
-import FileReadStream from './FileReadStream';
+import { FileReadStream } from './FileReadStream';
 
 const test = ninos(avaTest);
 

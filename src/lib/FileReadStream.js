@@ -1,9 +1,11 @@
-import EventEmitter from './EventEmitter';
-import FileChunkReader from './FileChunkReader';
+import { EventEmitter } from './EventEmitter';
+import { FileChunkReader } from './FileChunkReader';
 
 const DEFAULT_CHUNK_SIZE = 2000000; // 2 MB
 
-class FileReadStream extends EventEmitter {
+// Reads entire file in chunks of "chunkSize" size and emits "data" event
+// for each chunk. Emits "end" event when done reading.
+export class FileReadStream extends EventEmitter {
   constructor(file, options = {}) {
     super();
 
@@ -40,5 +42,3 @@ class FileReadStream extends EventEmitter {
     });
   }
 }
-
-export default FileReadStream;

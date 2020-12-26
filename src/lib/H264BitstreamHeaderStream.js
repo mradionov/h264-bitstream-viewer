@@ -1,9 +1,9 @@
-import EventEmitter from './EventEmitter';
-import H264BitstreamParser from './H264BitstreamParser';
+import { EventEmitter } from './EventEmitter';
+import { H264BitstreamParser } from './H264BitstreamParser';
 
 import arrayUtils from '../utils/arrayUtils';
 
-class H264BistreamOffsetStream extends EventEmitter {
+export class H264BitstreamHeaderStream extends EventEmitter {
   constructor() {
     super();
 
@@ -25,15 +25,16 @@ class H264BistreamOffsetStream extends EventEmitter {
 
     let combinedOffset = 0;
 
-    let unitInfo = H264BitstreamParser.findUnit(combinedData, combinedOffset);
+    let unitInfo = H264BitstreamParser.findUnitWithHeader(
+      combinedData,
+      combinedOffset,
+    );
 
     // Not able to find any units in appended data, keep it for later appends
     if (unitInfo.size === 0) {
       this.leftoverData = combinedData;
       return;
     }
-
-    let prevUnitInfo = null;
 
     while (unitInfo.size !== 0) {
       // If unit end offset matches combined data length, it should not be
@@ -55,9 +56,10 @@ class H264BistreamOffsetStream extends EventEmitter {
 
       combinedOffset = unitInfo.end;
 
-      prevUnitInfo = unitInfo;
-
-      unitInfo = H264BitstreamParser.findUnit(combinedData, combinedOffset);
+      unitInfo = H264BitstreamParser.findUnitWithHeader(
+        combinedData,
+        combinedOffset,
+      );
     }
 
     this.leftoverData = combinedData.slice(combinedOffset + 1);
@@ -65,7 +67,7 @@ class H264BistreamOffsetStream extends EventEmitter {
   }
 
   finish() {
-    const unitInfo = H264BitstreamParser.findUnit(this.leftoverData);
+    const unitInfo = H264BitstreamParser.findUnitWithHeader(this.leftoverData);
     if (unitInfo.size !== 0) {
       this.emitOffset(unitInfo);
     }
@@ -84,5 +86,3 @@ class H264BistreamOffsetStream extends EventEmitter {
     this.emit('data', unitInfoWithOffset);
   }
 }
-
-export default H264BistreamOffsetStream;

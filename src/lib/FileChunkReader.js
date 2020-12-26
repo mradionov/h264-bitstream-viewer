@@ -1,4 +1,5 @@
-class FileChunkReader {
+// Reads a chunk from a file in async/await form
+export class FileChunkReader {
   constructor(file) {
     this.file = file;
   }
@@ -33,5 +34,3 @@ class FileChunkReader {
     return promise;
   }
 }
-
-export default FileChunkReader;

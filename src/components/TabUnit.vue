@@ -4,31 +4,31 @@
       <Row>
         <HeaderCell>Type</HeaderCell>
         <Cell>
-          {{ unitHeader.type }}
-          <i>({{ unitHeader.type | nalTypeDisplayed }})</i>
+          {{ header.type }}
+          <i>({{ header.type | naluTypeDisplayed }})</i>
         </Cell>
       </Row>
       <Row>
         <HeaderCell>Reference idc</HeaderCell>
-        <Cell>{{ unitHeader.refIdc }}</Cell>
+        <Cell>{{ header.refIdc }}</Cell>
       </Row>
       <Row>
         <HeaderCell>Forbidden zero bit</HeaderCell>
-        <Cell>{{ unitHeader.forbiddenZeroBit }}</Cell>
+        <Cell>{{ header.forbiddenZeroBit }}</Cell>
       </Row>
     </Table>
-    <Table :class="$style.range">
+    <Table :class="$style.location">
       <Row>
         <HeaderCell>Number</HeaderCell>
         <Cell>{{ number }}</Cell>
       </Row>
       <Row>
         <HeaderCell>Offset</HeaderCell>
-        <Cell>{{ range.start + 3 }}</Cell>
+        <Cell>{{ header.start + 3 }}</Cell>
       </Row>
       <Row>
         <HeaderCell>Size</HeaderCell>
-        <Cell>{{ range.size - 3 }}</Cell>
+        <Cell>{{ header.size - 3 }}</Cell>
       </Row>
     </Table>
   </div>
@@ -50,17 +50,12 @@ export default {
       type: Number,
       default: -1,
     },
-    range: {
+    header: {
       type: Object,
       default: () => ({
         start: -1,
         end: -1,
         size: 0,
-      }),
-    },
-    unitHeader: {
-      type: Object,
-      default: () => ({
         type: -1,
         refIdc: -1,
         forbiddenZeroBit: -1,
@@ -71,7 +66,7 @@ export default {
 </script>
 
 <style module>
-.range {
+.location {
   margin-top: 10px;
 }
 </style>

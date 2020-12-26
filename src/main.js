@@ -6,9 +6,11 @@ import './assets/styles/global.css';
 
 import App from './components/App';
 
-import nalHelper from './helpers/nalHelper';
+import h264Helper from './helpers/h264Helper';
 
-Vue.filter('nalTypeDisplayed', nalHelper.nalTypeDisplayed);
+Vue.filter('naluTypeDisplayed', h264Helper.naluTypeDisplayed);
+Vue.filter('seiTypeDisplayed', h264Helper.seiTypeDisplayed);
+Vue.filter('audPrimaryPicTypeDisplayed', h264Helper.audPrimaryPicTypeDisplayed);
 
 const app = new Vue({
   render: (h) => h(App),

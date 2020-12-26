@@ -1,163 +1,158 @@
 <template>
-  <div :class="$style.container">
-    <div :class="$style.header">
-      <div :class="$style.upload">
-        <UiFileupload name="file" @change="handleFile" />
-        <div v-if="isLoading" :class="$style.loading">
-          <UiProgressCircular :progress="progress" type="determinate" />
-          <span :class="$style.loadingText">Loading ...</span>
-        </div>
-      </div>
-      <div :class="$style.about">
-        H264 Bitstream Viewer
-        <span :class="$style.separator">|</span>
-        <Link to="https://github.com/mradionov/h264-bitstream-viewer">
-          GitHub
-        </Link>
-      </div>
+  <div :class="$style.app">
+    <div v-if="isLoadingModule" :class="$style.loading">
+      <div>Loading...</div>
+      <br />
+      <div>Please refresh the page, if it is not loading for a long time</div>
     </div>
-    <div :class="$style.content">
-      <div :class="$style.list">
-        <div :class="$style.scrollable">
-          <UnitHeaderList
-            :indexOffset="indexOffset"
-            :selectedIndex="selectedIndex"
-            :unitHeaders="unitHeaders"
-            @select="handleUnitHeaderSelect"
+    <div v-else :class="$style.container">
+      <div :class="$style.header">
+        <div :class="$style.upload">
+          <UiFileupload name="file" @change="handleFile" />
+          <Loader v-if="isLoadingFile" :progress="progress" />
+        </div>
+        <About />
+      </div>
+      <div :class="$style.content">
+        <div :class="$style.list">
+          <div :class="$style.scrollable">
+            <HeaderList
+              :indexOffset="indexOffset"
+              :selectedIndex="selectedIndex"
+              :headers="pageHeaders"
+              @select="handleHeaderSelect"
+            />
+          </div>
+          <Pagination
+            :class="$style.pagination"
+            :currentPage="currentPage"
+            :perPage="perPage"
+            :totalPages="totalPages"
+            @change="handlePageChange"
+            @perPageChange="handlePerPageChange"
           />
         </div>
-        <Pagination
-          :class="$style.pagination"
-          :currentPage="currentPage"
-          :perPage="perPage"
-          :totalPages="totalPages"
-          @change="handlePageChange"
-          @perPageChange="handlePerPageChange"
-        />
-      </div>
-      <div :class="$style.details">
-        <UiTabs v-if="hasDetails" :class="$style.tabs">
-          <UiTab title="Details">
-            <TabDetails :details="details" />
-          </UiTab>
-          <UiTab title="NAL">
-            <TabUnit
-              :number="this.selectedNumber"
-              :range="selectedRange"
-              :unitHeader="selectedUnitHeader"
-            />
-          </UiTab>
-        </UiTabs>
+        <div :class="$style.data">
+          <UiTabs v-if="hasPayload" :class="$style.tabs">
+            <UiTab title="Payload">
+              <Payload :payload="payload" />
+            </UiTab>
+            <UiTab title="NAL">
+              <TabUnit :number="this.selectedIndex" :header="selectedHeader" />
+            </UiTab>
+          </UiTabs>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { UiFileupload, UiProgressCircular, UiTabs, UiTab } from 'keen-ui';
+import { UiFileupload, UiTabs, UiTab } from 'keen-ui';
 
-import Link from './Link';
+import About from './About';
+import Loader from './Loader';
 import Pagination from './Pagination';
-import TabDetails from './TabDetails';
+import Payload from './Payload';
 import TabUnit from './TabUnit';
-import UnitHeaderList from './UnitHeaderList';
+import HeaderList from './HeaderList';
 
-import FileChunkReader from '../lib/FileChunkReader';
-import FileReadStream from '../lib/FileReadStream';
-import H264BitstreamParser from '../lib/H264BitstreamParser';
-import H264BitstreamOffsetStream from '../lib/H264BitstreamOffsetStream';
+import { H264BitstreamBinding, H264BitstreamFile, NALU_TYPES } from '../lib';
 
 export default {
   components: {
     UiFileupload,
-    UiProgressCircular,
     UiTabs,
     UiTab,
 
-    Link,
+    About,
+    HeaderList,
+    Loader,
     Pagination,
-    TabDetails,
+    Payload,
     TabUnit,
-    UnitHeaderList,
   },
 
   data() {
     return {
-      isLoading: false,
-      lastLoadedOffset: 0,
-      totalRanges: 0,
+      isLoadingModule: true,
+      isLoadingFile: false,
+      progress: 0,
+      totalHeaders: 0,
       selectedIndex: -1,
-      selectedUnitHeader: null,
-      details: null,
+      payload: null,
       currentPage: 1,
       perPage: 30,
-      unitHeaders: [],
+      pageHeaders: [],
     };
   },
 
   // https://github.com/vuejs/vue/issues/1988
-  file: null,
-  ranges: [],
+  binding: null,
+  bitstream: null,
 
   computed: {
-    progress() {
-      if (!this.isLoading) {
-        return 0;
-      }
-
-      if (!this.$options.file) {
-        return 0;
-      }
-
-      const progress = (this.lastLoadedOffset / this.$options.file.size) * 100;
-
-      return progress;
-    },
-    hasDetails() {
-      return this.details !== null;
+    hasPayload() {
+      return this.payload !== null;
     },
     indexOffset() {
       return (this.currentPage - 1) * this.perPage;
     },
     totalPages() {
-      return Math.ceil(this.totalRanges / this.perPage);
+      return Math.ceil(this.totalHeaders / this.perPage);
     },
     selectedNumber() {
       if (this.selectedIndex === -1) {
         return -1;
       }
-      return this.selectedIndex + 1;
+      return this.selectedIndex;
     },
-    selectedRange() {
-      const noRange = {
+    selectedHeader() {
+      const noHeader = {
         start: -1,
         end: -1,
         size: 0,
+        forbiddenZeroBit: -1,
+        refIdc: -1,
+        type: -1,
       };
 
-      const selectedRange = this.$options.ranges[this.selectedIndex];
-      if (selectedRange === undefined) {
-        return noRange;
+      const selectedHeader = this.$options.bitstream.headers[
+        this.selectedIndex
+      ];
+      if (selectedHeader === undefined) {
+        return noHeader;
       }
 
-      return selectedRange;
+      return selectedHeader;
     },
+  },
+
+  mounted() {
+    Module.onRuntimeInitialized = () => {
+      this.isLoadingModule = false;
+    };
   },
 
   methods: {
     reset() {
-      this.$options.file = null;
-      this.$options.ranges = [];
-
-      this.isLoading = false;
-
-      this.lastLoadedOffset = 0;
-      this.totalRanges = 0;
+      this.isLoadingFile = false;
+      this.progress = 0;
+      this.totalHeaders = 0;
       this.selectedIndex = -1;
-      this.selectedUnitHeader = null;
-      this.details = null;
+      this.payload = null;
       this.currentPage = 1;
-      this.unitHeaders = [];
+      this.pageHeaders = [];
+
+      if (this.$options.binding !== null) {
+        this.$options.binding.destroy();
+        this.$options.binding = null;
+      }
+
+      if (this.$options.bitstream !== null) {
+        this.$options.bitstream.destroy();
+        this.$options.bitstream = null;
+      }
     },
 
     handleFile(files) {
@@ -169,37 +164,28 @@ export default {
 
       const file = files[0];
 
-      this.isLoading = true;
-      this.$options.file = file;
+      const bitstream = new H264BitstreamFile(file);
 
-      const ranges = [];
-
-      const offsetStream = new H264BitstreamOffsetStream();
-
-      offsetStream.addEventListener('data', async (range) => {
-        this.lastLoadedOffset = range.end;
-        ranges.push(range);
+      bitstream.addEventListener('start', () => {
+        this.isLoadingFile = true;
       });
 
-      offsetStream.addEventListener('end', async () => {
-        this.$options.ranges = ranges;
-        this.totalRanges = ranges.length;
-        this.isLoading = false;
+      bitstream.addEventListener('progress', (progress) => {
+        this.progress = progress;
+      });
 
+      bitstream.addEventListener('end', () => {
+        this.isLoadingFile = false;
+        this.totalHeaders = this.$options.bitstream.getTotalHeaders();
         this.loadPage();
       });
 
-      const fileStream = new FileReadStream(this.$options.file);
+      const binding = new H264BitstreamBinding(bitstream);
 
-      fileStream.addEventListener('data', (chunkBuffer) => {
-        offsetStream.appendData(new Uint8Array(chunkBuffer));
-      });
+      bitstream.load();
 
-      fileStream.addEventListener('end', () => {
-        offsetStream.finish();
-      });
-
-      fileStream.start();
+      this.$options.bitstream = bitstream;
+      this.$options.binding = binding;
     },
 
     handlePageChange(nextPage) {
@@ -208,84 +194,46 @@ export default {
     },
 
     handlePerPageChange(perPage) {
+      this.currentPage = 1;
       this.perPage = perPage;
       this.loadPage();
     },
 
-    async handleUnitHeaderSelect(unitHeader, index) {
-      this.selectedUnitHeader = unitHeader;
+    async handleHeaderSelect(header, index) {
+      const payload = await this.$options.binding.read(header);
 
-      const range = this.$options.ranges[index];
-      if (range === undefined) {
-        return;
-      }
+      console.log({ header, payload });
 
       this.selectedIndex = index;
-
-      const chunkReader = new FileChunkReader(this.$options.file);
-      const buffer = await chunkReader.readAsArrayBuffer(
-        range.start,
-        range.size,
-      );
-      const data = new Uint8Array(buffer);
-
-      const dataNoStartCode = data.slice(3);
-
-      const reader = new window.Module.Reader();
-      const text = this.read(reader, dataNoStartCode);
-
-      this.details = text;
+      this.payload = payload;
     },
 
     async loadPage() {
       const pageStart = (this.currentPage - 1) * this.perPage;
       const pageEnd = pageStart + this.perPage;
 
-      const pageRanges = this.$options.ranges.slice(pageStart, pageEnd);
-      if (pageRanges.length === 0) {
-        return;
-      }
-
-      const start = pageRanges[0].start;
-      const size = pageRanges.reduce((sum, range) => {
-        return sum + range.size;
-      }, 0);
-
-      const chunkReader = new FileChunkReader(this.$options.file);
-      const buffer = await chunkReader.readAsArrayBuffer(start, size);
-      const data = new Uint8Array(buffer);
-
-      const unitHeaders = pageRanges.map((range) => {
-        const offset = range.start - start;
-
-        const unitHeader = H264BitstreamParser.readUnitHeader(data, offset);
-
-        return unitHeader;
-      });
-
-      this.unitHeaders = unitHeaders;
-    },
-
-    read(reader, data) {
-      const unitData32 = new Int32Array(data);
-
-      const numBytes = unitData32.length * unitData32.BYTES_PER_ELEMENT;
-      const ptr = Module._malloc(numBytes);
-
-      const heapBytes = new Uint8Array(Module.HEAPU8.buffer, ptr, numBytes);
-      heapBytes.set(new Uint8Array(unitData32.buffer));
-
-      const ret = reader.read(ptr, unitData32.length);
-
-      Module._free(ptr);
-
-      return ret;
+      this.pageHeaders = this.$options.bitstream.headers.slice(
+        pageStart,
+        pageEnd,
+      );
     },
   },
 };
 </script>
 
 <style module>
+.app {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.loading {
+  padding: 20px;
+  flex: 1;
+}
+
 .container {
   display: flex;
   flex: 1;
@@ -302,15 +250,6 @@ export default {
 .upload {
   display: flex;
   flex: 1;
-}
-
-.about {
-  color: #555;
-}
-
-.separator {
-  color: #aaa;
-  margin: 0 10px;
 }
 
 .content {
@@ -335,7 +274,7 @@ export default {
   padding: 10px 0;
 }
 
-.details {
+.data {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -354,15 +293,5 @@ export default {
   flex-direction: column;
   min-height: 0;
   overflow: auto;
-}
-
-.loading {
-  display: flex;
-  margin-left: 10px;
-}
-
-.loadingText {
-  margin-left: 10px;
-  padding: 7px 0;
 }
 </style>

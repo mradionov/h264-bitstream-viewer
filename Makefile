@@ -1,7 +1,6 @@
 dist/h264bitstream.js: \
-	src/wrapper/h264bitstream-wrapper.cpp \
-	src/wrapper/h264naked-print.cpp \
-	src/wrapper/reader.cpp \
+	src/binding/binding.cpp \
+	src/binding/reader.cpp \
 	h264bitstream/.libs/libh264bitstream.so.0.0.0
 	mkdir dist
 	emcc \

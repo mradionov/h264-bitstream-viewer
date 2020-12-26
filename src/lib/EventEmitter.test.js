@@ -1,7 +1,7 @@
 import avaTest from 'ava';
 import ninos from 'ninos';
 
-import EventEmitter from './EventEmitter';
+import { EventEmitter } from './EventEmitter';
 
 const test = ninos(avaTest);
 
