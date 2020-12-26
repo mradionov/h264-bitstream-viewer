@@ -26,12 +26,26 @@
         </Cell>
       </Row>
       <template v-if="prefix_nal_svc.additional_prefix_nal_unit_extension_flag">
-        <TodoRow tag="additional_prefix_nal_unit_extension_data_flag" />
+        <Row>
+          <Cell>additional_prefix_nal_unit_extension_data_flag</Cell>
+          <Cell>
+            {{
+              Number(
+                prefix_nal_svc.additional_prefix_nal_unit_extension_data_flag,
+              )
+            }}
+          </Cell>
+        </Row>
       </template>
     </template>
-    <template v-else>
-      <TodoRow tag="more_rbsp_data" />
-    </template>
+    <Row>
+      <Cell>additional_prefix_nal_unit_extension_data_flag</Cell>
+      <Cell>
+        {{
+          Number(prefix_nal_svc.additional_prefix_nal_unit_extension_data_flag)
+        }}
+      </Cell>
+    </Row>
   </Table>
 </template>
 
