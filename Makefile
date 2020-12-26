@@ -1,6 +1,5 @@
 dist/h264bitstream.js: \
 	src/binding/binding.cpp \
-	src/binding/h264naked-print.cpp \
 	src/binding/reader.cpp \
 	h264bitstream/.libs/libh264bitstream.so.0.0.0
 	mkdir dist
