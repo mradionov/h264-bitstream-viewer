@@ -18,6 +18,7 @@ export default {
 <style module>
 .cell {
   background: #fff;
+  text-align: left;
   padding: 5px;
   top: 0;
 }

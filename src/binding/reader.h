@@ -15,6 +15,7 @@ public:
   std::string readNaked(uintptr_t input, int size);
   pps_t readPPS(uintptr_t input, int size);
   sps_t readSPS(uintptr_t input, int size);
+  aud_t readAUD(uintptr_t input, int size);
   slice_header_t readSliceHeader(uintptr_t input, int size);
   std::vector<bind_sei_t> readSEI(uintptr_t input, int size);
   bind_sps_subset_t readSPSSubset(uintptr_t input, int size);

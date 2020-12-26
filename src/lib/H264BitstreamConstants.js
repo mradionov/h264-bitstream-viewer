@@ -89,3 +89,14 @@ export const SEI_TYPES = {
   DEBLOCKING_FILTER_DISPLAY_PREFERENCE: 20,
   STEREO_VIDEO_INFO: 21,
 };
+
+export const AUD_PRIMARY_PIC_TYPES = {
+  I: 0, // I
+  IP: 1, // I, P
+  IPB: 2, // I, P, B
+  SI: 3, // SI
+  SISP: 4, // SI, SP
+  ISI: 5, // I, SI
+  ISIPSP: 6, // I, SI, P, SP
+  ISIPSPB: 7, // I, SI, P, SP, B
+};

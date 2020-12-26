@@ -171,3 +171,21 @@ nal_svc_ext_t Reader::readNALHeaderSVCEXT(uintptr_t input, int size) {
 
   return nal_svc_ext;
 }
+
+aud_t Reader::readAUD(uintptr_t input, int size) {
+  const int32_t* data = reinterpret_cast<int32_t*>(input);
+
+  uint8_t* buf = new uint8_t[size];
+
+  for (int i = 0; i < size; i += 1) {
+    buf[i] = (uint8_t) (data[i] & 0xff);
+  }
+
+  read_nal_unit(m_h264_stream, buf, size);
+
+  aud_t aud = *(m_h264_stream->aud);
+
+  delete [] buf;
+
+  return aud;
+}

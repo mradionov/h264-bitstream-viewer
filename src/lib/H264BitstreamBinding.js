@@ -5,6 +5,7 @@ const MAP_TYPE_TO_METHOD_NAME = {
   [NALU_TYPES.PPS]: 'readPPS',
   [NALU_TYPES.SPS]: 'readSPS',
   [NALU_TYPES.SEI]: 'readSEI',
+  [NALU_TYPES.AUD]: 'readAUD',
   [NALU_TYPES.CODED_SLICE_IDR]: 'readSliceHeader',
   [NALU_TYPES.CODED_SLICE_NON_IDR]: 'readSliceHeader',
   [NALU_TYPES.CODED_SLICE_AUX]: 'readSliceHeader',
@@ -49,6 +50,8 @@ export class H264BitstreamBinding extends EventEmitter {
       payload.pps = this.readByType(header, data);
     } else if (header.type === NALU_TYPES.SEI) {
       payload.sei = this.readByType(header, data);
+    } else if (header.type === NALU_TYPES.AUD) {
+      payload.aud = this.readByType(header, data);
     } else if (
       header.type === NALU_TYPES.CODED_SLICE_IDR ||
       header.type === NALU_TYPES.CODED_SLICE_NON_IDR ||
@@ -145,6 +148,7 @@ export class H264BitstreamBinding extends EventEmitter {
       pps: null,
       sh: null,
       sei: null,
+      aud: null,
       prefix_nal_svc: null,
       nal_svc_ext: null,
       naked: '',

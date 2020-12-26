@@ -31,6 +31,7 @@
       v-else-if="type === NALU_TYPES.PREFIX_NAL"
       :payload="payload"
     />
+    <PayloadAUD v-else-if="type === NALU_TYPES.AUD" :payload="payload" />
     <PayloadNaked v-else-if="payload.naked.length > 0" :payload="payload" />
     <PayloadMissing v-else :payload="payload" />
   </div>
@@ -40,6 +41,7 @@
 import { NALU_TYPES } from '../../lib';
 
 import HeaderSVCExtension from './HeaderSVCExtension';
+import PayloadAUD from './PayloadAUD';
 import PayloadSPS from './PayloadSPS';
 import PayloadPPS from './PayloadPPS';
 import PayloadSEI from './PayloadSEI';
@@ -52,6 +54,7 @@ import PayloadNaked from './PayloadNaked';
 export default {
   components: {
     HeaderSVCExtension,
+    PayloadAUD,
     PayloadSPS,
     PayloadPPS,
     PayloadSEI,

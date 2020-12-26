@@ -1,4 +1,4 @@
-import { NALU_TYPES, SEI_TYPES } from '../lib';
+import { NALU_TYPES, SEI_TYPES, AUD_PRIMARY_PIC_TYPES } from '../lib';
 
 const h264Helper = {
   naluTypeDisplayed(type) {
@@ -92,6 +92,29 @@ const h264Helper = {
         return 'Deblocking filter display preference';
       case SEI_TYPES.STEREO_VIDEO_INFO:
         return '';
+      default:
+        return 'Unknown';
+    }
+  },
+
+  audPrimaryPicTypeDisplayed(type) {
+    switch (type) {
+      case AUD_PRIMARY_PIC_TYPES.I:
+        return 'I';
+      case AUD_PRIMARY_PIC_TYPES.IP:
+        return 'I, P';
+      case AUD_PRIMARY_PIC_TYPES.IPB:
+        return 'I, P, B';
+      case AUD_PRIMARY_PIC_TYPES.SI:
+        return 'SI';
+      case AUD_PRIMARY_PIC_TYPES.SISP:
+        return 'SI, SP';
+      case AUD_PRIMARY_PIC_TYPES.ISI:
+        return 'I, SI';
+      case AUD_PRIMARY_PIC_TYPES.ISIPSP:
+        return 'I, SI, P, SP';
+      case AUD_PRIMARY_PIC_TYPES.ISIPSPB:
+        return 'I, SI, P, SP, B';
       default:
         return 'Unknown';
     }

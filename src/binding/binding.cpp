@@ -18,6 +18,7 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .function("readPPS", &Reader::readPPS)
     .function("readSPS", &Reader::readSPS)
     .function("readSEI", &Reader::readSEI)
+    .function("readAUD", &Reader::readAUD)
     .function("readSliceHeader", &Reader::readSliceHeader)
     .function("readSPSSubset", &Reader::readSPSSubset)
     .function("readPrefixNAL", &Reader::readPrefixNAL)
@@ -356,5 +357,9 @@ EMSCRIPTEN_BINDINGS(H264Bitstream) {
     .field("discardable_flag", &nal_svc_ext_t::discardable_flag)
     .field("output_flag", &nal_svc_ext_t::output_flag)
     .field("reserved_three_2bits", &nal_svc_ext_t::reserved_three_2bits)
+  ;
+
+  emscripten::value_object<aud_t>("aud_t")
+    .field("primary_pic_type", &aud_t::primary_pic_type)
   ;
 };
