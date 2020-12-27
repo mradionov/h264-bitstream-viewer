@@ -19,8 +19,8 @@
     </Table>
     <Table :class="$style.location">
       <Row>
-        <HeaderCell>Number</HeaderCell>
-        <Cell>{{ number }}</Cell>
+        <HeaderCell>Index</HeaderCell>
+        <Cell>{{ index }}</Cell>
       </Row>
       <Row>
         <HeaderCell>Offset</HeaderCell>
@@ -46,7 +46,7 @@ export default {
   },
 
   props: {
-    number: {
+    index: {
       type: Number,
       default: -1,
     },

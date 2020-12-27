@@ -6,3 +6,4 @@ export * from './H264BitstreamConstants';
 export * from './H264BitstreamFile';
 export * from './H264BitstreamHeaderStream';
 export * from './H264BitstreamParser';
+export * from './KeyboardListener';

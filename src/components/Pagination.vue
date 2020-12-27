@@ -18,14 +18,14 @@
     </select>
 
     <div
-      :class="[$style.button, (!hasPages || isFirst) && $style.disabled]"
+      :class="[$style.button, !canJumpFirstPage && $style.disabled]"
       title="First page"
       @click="handleFirstClick"
     >
       &lt;&lt;
     </div>
     <div
-      :class="[$style.button, (!hasPages || isFirst) && $style.disabled]"
+      :class="[$style.button, !canJumpPrevPage && $style.disabled]"
       title="Prev page"
       @click="handlePrevClick"
     >
@@ -43,14 +43,14 @@
     </div>
 
     <div
-      :class="[$style.button, (!hasPages || isLast) && $style.disabled]"
+      :class="[$style.button, !canJumpNextPage && $style.disabled]"
       title="Next page"
       @click="handleNextClick"
     >
       &gt;
     </div>
     <div
-      :class="[$style.button, (!hasPages || isLast) && $style.disabled]"
+      :class="[$style.button, !camJumpLastPage && $style.disabled]"
       title="Last page"
       @click="handleLastClick"
     >
@@ -58,14 +58,14 @@
     </div>
 
     <div
-      :class="[$style.button, $style.jump, !hasPages && $style.disabled]"
+      :class="[$style.button, $style.jump, !canJumpToPage && $style.disabled]"
       @click="handlePageJump"
     >
       Go to page
     </div>
 
     <div
-      :class="[$style.button, $style.jump, !hasPages && $style.disabled]"
+      :class="[$style.button, $style.jump, !canJumpToItem && $style.disabled]"
       @click="handleItemJump"
     >
       Go to item
@@ -74,6 +74,8 @@
 </template>
 
 <script>
+import { makeKeydownListener, KEY_CODES } from '../lib';
+
 export default {
   props: {
     currentPage: {
@@ -99,6 +101,24 @@ export default {
   },
 
   computed: {
+    canJumpFirstPage() {
+      return this.hasPages && !this.isFirst;
+    },
+    camJumpLastPage() {
+      return this.hasPages && !this.isLast;
+    },
+    canJumpPrevPage() {
+      return this.hasPages && !this.isFirst;
+    },
+    canJumpNextPage() {
+      return this.hasPages && !this.isLast;
+    },
+    canJumpToPage() {
+      return this.hasPages;
+    },
+    canJumpToItem() {
+      return this.hasPages;
+    },
     hasPages() {
       return this.totalPages > 0;
     },
@@ -108,6 +128,23 @@ export default {
     isLast() {
       return this.currentPage === this.totalPages;
     },
+  },
+
+  mounted() {
+    // Don't care about removing event listeners as it's only on instance of
+    // this component.
+    makeKeydownListener(KEY_CODES.ARROW_RIGHT, () => {
+      this.jumpNextPage();
+    });
+    makeKeydownListener(KEY_CODES.ARROW_LEFT, () => {
+      this.jumpPrevPage();
+    });
+    makeKeydownListener(KEY_CODES.P, () => {
+      this.showPageJumpDialog();
+    });
+    makeKeydownListener(KEY_CODES.I, () => {
+      this.showItemJumpDialog();
+    });
   },
 
   methods: {
@@ -131,14 +168,10 @@ export default {
       this.emitChange(this.totalPages);
     },
     handlePrevClick() {
-      const nextPage = Math.max(1, this.currentPage - 1);
-
-      this.emitChange(nextPage);
+      this.jumpPrevPage();
     },
     handleNextClick() {
-      const nextPage = Math.min(this.totalPages, this.currentPage + 1);
-
-      this.emitChange(nextPage);
+      this.jumpNextPage();
     },
     handlePageClick(page) {
       if (this.isActive(page) || this.isSeparator(page)) {
@@ -148,6 +181,16 @@ export default {
       this.emitChange(page);
     },
     handlePageJump() {
+      this.showPageJumpDialog();
+    },
+    handleItemJump() {
+      this.showItemJumpDialog();
+    },
+    showPageJumpDialog() {
+      if (!this.canJumpToPage) {
+        return;
+      }
+
       const answer = window.prompt('Jump to page:');
 
       let nextPage = Number(answer);
@@ -159,19 +202,43 @@ export default {
 
       this.emitChange(nextPage);
     },
-    handleItemJump() {
-      const answer = window.prompt('Jump to item:');
-
-      let globalItemIndex = Number(answer);
-      if (!globalItemIndex) {
+    showItemJumpDialog() {
+      if (!this.canJumpToItem) {
         return;
       }
 
-      const page = this.clampPage(Math.ceil(globalItemIndex / this.perPage));
+      const answer = window.prompt('Jump to item:');
+
+      let globalItemIndex = Number(answer);
+      if (isNaN(globalItemIndex)) {
+        return;
+      }
+
+      const page = this.clampPage(
+        Math.ceil((globalItemIndex + 1) / this.perPage),
+      );
 
       const localItemIndex = globalItemIndex - (page - 1) * this.perPage;
 
       this.emitChange(page, globalItemIndex, localItemIndex);
+    },
+    jumpPrevPage() {
+      if (!this.canJumpPrevPage) {
+        return;
+      }
+
+      const nextPage = Math.max(1, this.currentPage - 1);
+
+      this.emitChange(nextPage);
+    },
+    jumpNextPage() {
+      if (!this.canJumpNextPage) {
+        return;
+      }
+
+      const nextPage = Math.min(this.totalPages, this.currentPage + 1);
+
+      this.emitChange(nextPage);
     },
     emitChange(page, globalItemIndex = -1, localItemIndex = -1) {
       const event = { page, globalItemIndex, localItemIndex };

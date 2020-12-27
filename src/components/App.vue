@@ -18,19 +18,21 @@
           <div :class="$style.scrollable">
             <HeaderList
               :indexOffset="indexOffset"
-              :selectedIndex="selectedIndex"
+              :selectedIndex="selectedGlobalIndex"
               :headers="pageHeaders"
               @select="handleHeaderSelect"
             />
           </div>
-          <Pagination
-            :class="$style.pagination"
-            :currentPage="currentPage"
-            :perPage="perPage"
-            :totalPages="totalPages"
-            @change="handlePageChange"
-            @perPageChange="handlePerPageChange"
-          />
+          <div :class="$style.footer">
+            <Pagination
+              :currentPage="currentPage"
+              :perPage="perPage"
+              :totalPages="totalPages"
+              @change="handlePageChange"
+              @perPageChange="handlePerPageChange"
+            />
+            <Shortcuts :class="$style.shortcuts" />
+          </div>
         </div>
         <div :class="$style.data">
           <UiTabs v-if="hasPayload" :class="$style.tabs">
@@ -38,7 +40,10 @@
               <Payload :payload="payload" />
             </UiTab>
             <UiTab title="NAL">
-              <TabUnit :number="this.selectedIndex" :header="selectedHeader" />
+              <HeaderInfo
+                :index="selectedGlobalIndex"
+                :header="selectedHeader"
+              />
             </UiTab>
           </UiTabs>
         </div>
@@ -51,13 +56,20 @@
 import { UiFileupload, UiTabs, UiTab } from 'keen-ui';
 
 import About from './About';
+import HeaderInfo from './HeaderInfo';
+import HeaderList from './HeaderList';
 import Loader from './Loader';
 import Pagination from './Pagination';
 import Payload from './Payload';
-import TabUnit from './TabUnit';
-import HeaderList from './HeaderList';
+import Shortcuts from './Shortcuts';
 
-import { H264BitstreamBinding, H264BitstreamFile, NALU_TYPES } from '../lib';
+import {
+  H264BitstreamBinding,
+  H264BitstreamFile,
+  NALU_TYPES,
+  makeKeydownListener,
+  KEY_CODES,
+} from '../lib';
 
 export default {
   components: {
@@ -66,11 +78,12 @@ export default {
     UiTab,
 
     About,
+    HeaderInfo,
     HeaderList,
     Loader,
     Pagination,
     Payload,
-    TabUnit,
+    Shortcuts,
   },
 
   data() {
@@ -79,7 +92,7 @@ export default {
       isLoadingFile: false,
       progress: 0,
       totalHeaders: 0,
-      selectedIndex: -1,
+      selectedGlobalIndex: -1,
       payload: null,
       currentPage: 1,
       perPage: 30,
@@ -101,12 +114,6 @@ export default {
     totalPages() {
       return Math.ceil(this.totalHeaders / this.perPage);
     },
-    selectedNumber() {
-      if (this.selectedIndex === -1) {
-        return -1;
-      }
-      return this.selectedIndex;
-    },
     selectedHeader() {
       const noHeader = {
         start: -1,
@@ -118,7 +125,7 @@ export default {
       };
 
       const selectedHeader = this.$options.bitstream.headers[
-        this.selectedIndex
+        this.selectedGlobalIndex
       ];
       if (selectedHeader === undefined) {
         return noHeader;
@@ -126,12 +133,39 @@ export default {
 
       return selectedHeader;
     },
+    pageStart() {
+      return (this.currentPage - 1) * this.perPage;
+    },
+    pageEnd() {
+      return this.pageStart + this.perPage;
+    },
+    isSelectedIndexOutOfPage() {
+      return (
+        this.selectedGlobalIndex < this.pageStart ||
+        this.selectedGlobalIndex > this.pageEnd
+      );
+    },
   },
 
   mounted() {
     Module.onRuntimeInitialized = () => {
       this.isLoadingModule = false;
     };
+
+    // Don't care about removing event listeners as it's only on instance of
+    // this component.
+    makeKeydownListener(KEY_CODES.ARROW_UP, () => {
+      const nextIndex = this.isSelectedIndexOutOfPage
+        ? this.localToGlobalIndex(0)
+        : this.selectedGlobalIndex - 1;
+      this.loadPayload(nextIndex);
+    });
+    makeKeydownListener(KEY_CODES.ARROW_DOWN, () => {
+      const nextIndex = this.isSelectedIndexOutOfPage
+        ? this.localToGlobalIndex(0)
+        : this.selectedGlobalIndex + 1;
+      this.loadPayload(nextIndex);
+    });
   },
 
   methods: {
@@ -139,7 +173,7 @@ export default {
       this.isLoadingFile = false;
       this.progress = 0;
       this.totalHeaders = 0;
-      this.selectedIndex = -1;
+      this.selectedGlobalIndex = -1;
       this.payload = null;
       this.currentPage = 1;
       this.pageHeaders = [];
@@ -188,47 +222,54 @@ export default {
       this.$options.binding = binding;
     },
 
-    async handlePageChange({ page, localItemIndex }) {
+    async handlePageChange({ page, globalItemIndex }) {
       this.currentPage = page;
       await this.loadPage();
 
-      if (localItemIndex !== -1) {
-        this.loadPayload(localItemIndex);
+      // If entered in pagination component
+      if (globalItemIndex !== -1) {
+        this.loadPayload(globalItemIndex);
       }
     },
 
-    handlePerPageChange(perPage) {
+    async handlePerPageChange(perPage) {
       this.currentPage = 1;
       this.perPage = perPage;
       this.loadPage();
     },
 
-    async handleHeaderSelect({ header, localIndex }) {
-      this.loadPayload(localIndex);
+    async handleHeaderSelect({ header, globalIndex }) {
+      this.loadPayload(globalIndex);
     },
 
-    async loadPayload(localIndex) {
+    async loadPayload(globalIndex) {
+      const localIndex = this.globalToLocalIndex(globalIndex);
+
       const header = this.pageHeaders[localIndex];
       if (header === undefined) {
         return;
       }
-
       const payload = await this.$options.binding.read(header);
 
       console.log({ header, payload });
 
-      this.selectedIndex = (this.currentPage - 1) * this.perPage + localIndex;
+      this.selectedGlobalIndex = globalIndex;
       this.payload = payload;
     },
 
     loadPage() {
-      const pageStart = (this.currentPage - 1) * this.perPage;
-      const pageEnd = pageStart + this.perPage;
-
       this.pageHeaders = this.$options.bitstream.headers.slice(
-        pageStart,
-        pageEnd,
+        this.pageStart,
+        this.pageEnd,
       );
+    },
+
+    localToGlobalIndex(localIndex) {
+      return (this.currentPage - 1) * this.perPage + localIndex;
+    },
+
+    globalToLocalIndex(globalIndex) {
+      return globalIndex - (this.currentPage - 1) * this.perPage;
     },
   },
 };
@@ -283,8 +324,13 @@ export default {
   overflow: auto;
 }
 
-.pagination {
+.footer {
+  display: flex;
   padding: 10px 0;
+}
+
+.shortcuts {
+  margin-left: 15px;
 }
 
 .data {
