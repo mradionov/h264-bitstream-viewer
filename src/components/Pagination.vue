@@ -59,9 +59,16 @@
 
     <div
       :class="[$style.button, $style.jump, !hasPages && $style.disabled]"
-      @click="handleJump"
+      @click="handlePageJump"
     >
       Go to page
+    </div>
+
+    <div
+      :class="[$style.button, $style.jump, !hasPages && $style.disabled]"
+      @click="handleItemJump"
+    >
+      Go to item
     </div>
   </div>
 </template>
@@ -118,33 +125,29 @@ export default {
     },
 
     handleFirstClick() {
-      const nextPage = 1;
-
-      this.$emit('change', nextPage);
+      this.emitChange(1);
     },
     handleLastClick() {
-      const nextPage = this.totalPages;
-
-      this.$emit('change', nextPage);
+      this.emitChange(this.totalPages);
     },
     handlePrevClick() {
       const nextPage = Math.max(1, this.currentPage - 1);
 
-      this.$emit('change', nextPage);
+      this.emitChange(nextPage);
     },
     handleNextClick() {
       const nextPage = Math.min(this.totalPages, this.currentPage + 1);
 
-      this.$emit('change', nextPage);
+      this.emitChange(nextPage);
     },
     handlePageClick(page) {
       if (this.isActive(page) || this.isSeparator(page)) {
         return;
       }
 
-      this.$emit('change', page);
+      this.emitChange(page);
     },
-    handleJump() {
+    handlePageJump() {
       const answer = window.prompt('Jump to page:');
 
       let nextPage = Number(answer);
@@ -152,10 +155,36 @@ export default {
         return;
       }
 
+      nextPage = this.clampPage(nextPage);
+
+      this.emitChange(nextPage);
+    },
+    handleItemJump() {
+      const answer = window.prompt('Jump to item:');
+
+      let globalItemIndex = Number(answer);
+      if (!globalItemIndex) {
+        return;
+      }
+
+      const page = this.clampPage(Math.ceil(globalItemIndex / this.perPage));
+
+      const localItemIndex = globalItemIndex - (page - 1) * this.perPage;
+
+      this.emitChange(page, globalItemIndex, localItemIndex);
+    },
+    emitChange(page, globalItemIndex = -1, localItemIndex = -1) {
+      const event = { page, globalItemIndex, localItemIndex };
+
+      this.$emit('change', event);
+    },
+    clampPage(inputPage) {
+      let nextPage = inputPage;
+
       nextPage = Math.max(1, nextPage);
       nextPage = Math.min(this.totalPages, nextPage);
 
-      this.$emit('change', nextPage);
+      return nextPage;
     },
   },
 };

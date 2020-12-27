@@ -188,9 +188,13 @@ export default {
       this.$options.binding = binding;
     },
 
-    handlePageChange(nextPage) {
-      this.currentPage = nextPage;
-      this.loadPage();
+    async handlePageChange({ page, localItemIndex }) {
+      this.currentPage = page;
+      await this.loadPage();
+
+      if (localItemIndex !== -1) {
+        this.loadPayload(localItemIndex);
+      }
     },
 
     handlePerPageChange(perPage) {
@@ -199,16 +203,25 @@ export default {
       this.loadPage();
     },
 
-    async handleHeaderSelect(header, index) {
+    async handleHeaderSelect({ header, localIndex }) {
+      this.loadPayload(localIndex);
+    },
+
+    async loadPayload(localIndex) {
+      const header = this.pageHeaders[localIndex];
+      if (header === undefined) {
+        return;
+      }
+
       const payload = await this.$options.binding.read(header);
 
       console.log({ header, payload });
 
-      this.selectedIndex = index;
+      this.selectedIndex = (this.currentPage - 1) * this.perPage + localIndex;
       this.payload = payload;
     },
 
-    async loadPage() {
+    loadPage() {
       const pageStart = (this.currentPage - 1) * this.perPage;
       const pageEnd = pageStart + this.perPage;
 

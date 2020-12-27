@@ -57,11 +57,18 @@ export default {
     isSelected(index) {
       return this.selectedIndex === this.getThruIndex(index);
     },
-    handleRowClick(unitHeader, index) {
+    handleRowClick(header, index) {
       if (this.isSelected(index)) {
         return;
       }
-      this.$emit('select', unitHeader, this.getThruIndex(index));
+
+      const event = {
+        header,
+        localIndex: index,
+        globalIndex: this.getThruIndex(index),
+      };
+
+      this.$emit('select', event);
     },
   },
 };
