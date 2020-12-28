@@ -137,7 +137,7 @@ export default {
       return (this.currentPage - 1) * this.perPage;
     },
     pageEnd() {
-      return this.pageStart + this.perPage;
+      return this.pageStart + this.perPage - 1;
     },
     isSelectedIndexOutOfPage() {
       return (
@@ -260,7 +260,7 @@ export default {
     loadPage() {
       this.pageHeaders = this.$options.bitstream.headers.slice(
         this.pageStart,
-        this.pageEnd,
+        this.pageEnd + 1,
       );
     },
 
