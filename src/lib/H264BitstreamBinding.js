@@ -119,15 +119,13 @@ export class H264BitstreamBinding extends EventEmitter {
   }
 
   invokeBindingMethod(methodName, data) {
-    const unitData32 = new Int32Array(data);
-
-    const numBytes = unitData32.length * unitData32.BYTES_PER_ELEMENT;
+    const numBytes = data.length * data.BYTES_PER_ELEMENT;
     const ptr = Module._malloc(numBytes);
 
     const heapBytes = new Uint8Array(Module.HEAPU8.buffer, ptr, numBytes);
-    heapBytes.set(new Uint8Array(unitData32.buffer));
+    heapBytes.set(new Uint8Array(data.buffer));
 
-    const ret = this.binding[methodName](ptr, unitData32.length);
+    const ret = this.binding[methodName](ptr, data.length);
 
     Module._free(ptr);
 
