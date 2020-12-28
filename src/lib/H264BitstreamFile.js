@@ -10,43 +10,51 @@ export class H264BitstreamFile extends EventEmitter {
     this.file = file;
     this.headers = [];
     this.lastLoadedOffset = 0;
+
+    this.fileStream = new FileReadStream(this.file);
+    this.fileStream.addEventListener('data', this.handleFileData.bind(this));
+    this.fileStream.addEventListener('end', this.handleFileEnd.bind(this));
+
+    this.offsetStream = new H264BitstreamHeaderStream();
+    this.offsetStream.addEventListener(
+      'data',
+      this.handleOffsetData.bind(this),
+    );
+    this.offsetStream.addEventListener('end', this.handleOffsetEnd.bind(this));
   }
 
   load() {
+    this.fileStream.start();
     this.emit('start');
+  }
 
-    const headers = [];
+  handleFileData(chunkBuffer) {
+    this.offsetStream.appendData(new Uint8Array(chunkBuffer));
+  }
 
-    const offsetStream = new H264BitstreamHeaderStream();
+  handleFileEnd() {
+    this.offsetStream.finish();
+  }
 
-    offsetStream.addEventListener('data', async (header) => {
-      this.lastLoadedOffset = header.end;
-      headers.push(header);
-      this.emitProgress();
-    });
+  handleOffsetData(header) {
+    this.lastLoadedOffset = header.end;
+    this.headers.push(header);
+    this.emitProgress();
+  }
 
-    offsetStream.addEventListener('end', async () => {
-      this.headers = headers;
-      this.emitProgress();
-      this.emit('end');
-    });
-
-    const fileStream = new FileReadStream(this.file);
-
-    fileStream.addEventListener('data', (chunkBuffer) => {
-      offsetStream.appendData(new Uint8Array(chunkBuffer));
-    });
-
-    fileStream.addEventListener('end', () => {
-      offsetStream.finish();
-    });
-
-    fileStream.start();
+  handleOffsetEnd() {
+    this.emitProgress();
+    this.emit('end');
   }
 
   destroy() {
     this.file = null;
     this.headers = [];
+
+    this.fileStream.destroy();
+    this.offsetStream.destroy();
+
+    this.removeAllEventListeners();
   }
 
   emitProgress() {

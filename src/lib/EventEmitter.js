@@ -22,6 +22,10 @@ export class EventEmitter {
     return this;
   }
 
+  removeAllEventListeners() {
+    this.listeners = {};
+  }
+
   emit(name, ...args) {
     if (this.listeners[name] === undefined) {
       return;

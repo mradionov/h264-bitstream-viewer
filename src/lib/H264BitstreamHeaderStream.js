@@ -66,6 +66,10 @@ export class H264BitstreamHeaderStream extends EventEmitter {
     this.thruOffset += combinedOffset + 1;
   }
 
+  destroy() {
+    this.removeAllEventListeners();
+  }
+
   finish() {
     const unitInfo = H264BitstreamParser.findUnitWithHeader(this.leftoverData);
     if (unitInfo.size !== 0) {
