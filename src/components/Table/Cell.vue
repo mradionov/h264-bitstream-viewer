@@ -1,5 +1,5 @@
 <template>
-  <td :class="$style.cell" :style="{ paddingLeft: `${level * 10}px` }">
+  <td :class="$style.cell" :style="{ paddingLeft: `${5 + level * 10}px` }">
     <slot />
   </td>
 </template>
