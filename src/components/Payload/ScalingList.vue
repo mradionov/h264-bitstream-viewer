@@ -1,20 +1,16 @@
 <template>
-  <tbody>
-    <Row v-for="(deltaScale, i) in deltaScales" :key="i">
-      <Cell>delta_scale[{{ i }}]</Cell>
-      <Cell>{{ deltaScale }}</Cell>
-    </Row>
-  </tbody>
+  <CollapseRows :items="deltaScales" title="delta_scale" />
 </template>
 
 <script>
-import { Table, Row, Cell } from '../Table';
+import { Table, Row, Cell, CollapseRows } from '../Table';
 
 export default {
   components: {
     Table,
     Row,
     Cell,
+    CollapseRows,
   },
 
   computed: {
