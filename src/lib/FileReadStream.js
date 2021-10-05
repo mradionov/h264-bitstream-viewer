@@ -1,5 +1,6 @@
 import { EventEmitter } from './EventEmitter';
 import { FileChunkReader } from './FileChunkReader';
+import threadUtils from '../utils/threadUtils';
 
 const DEFAULT_CHUNK_SIZE = 2000000; // 2 MB
 const STATE = {
@@ -62,7 +63,7 @@ export class FileReadStream extends EventEmitter {
     this.emit('data', buffer);
 
     // Don't lock thread with endless processing, work as soon as it is ready
-    window.requestIdleCallback(() => {
+    threadUtils.requestIdleCallback(() => {
       this.readNextChunk();
     });
   }
