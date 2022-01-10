@@ -25,16 +25,6 @@
               @select="handleHeaderSelect"
             />
           </div>
-          <div :class="$style.footer">
-            <Pagination
-              :currentPage="currentPage"
-              :perPage="perPage"
-              :totalPages="totalPages"
-              @change="handlePageChange"
-              @perPageChange="handlePerPageChange"
-            />
-            <Shortcuts :class="$style.shortcuts" />
-          </div>
         </div>
         <div :class="$style.data">
           <UiTabs v-if="hasPayload" :class="$style.tabs">
@@ -49,6 +39,16 @@
             </UiTab>
           </UiTabs>
         </div>
+      </div>
+      <div :class="$style.footer">
+        <Pagination
+          :currentPage="currentPage"
+          :perPage="perPage"
+          :totalPages="totalPages"
+          @change="handlePageChange"
+          @perPageChange="handlePerPageChange"
+        />
+        <Shortcuts :class="$style.shortcuts" />
       </div>
     </div>
   </div>
@@ -340,7 +340,7 @@ export default {
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  padding: 5px 20px;
+  padding: 0 20px;
 }
 
 .tabs {
@@ -348,7 +348,9 @@ export default {
   flex: 1;
   flex-direction: column;
   min-height: 0;
+  margin-bottom: 0;
 }
+
 .tabs > :global(.ui-tabs__body) {
   display: flex;
   flex-direction: column;
