@@ -8,7 +8,9 @@
     <div v-else :class="$style.container">
       <div :class="$style.header">
         <div :class="$style.upload">
-          <UiFileupload name="file" @change="handleFile" />
+          <UiFileupload name="file" @change="handleFile">
+            Upload .h264 file
+          </UiFileupload>
           <Loader v-if="isLoadingFile" :progress="progress" />
         </div>
         <About />
