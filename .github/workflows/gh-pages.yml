@@ -1,0 +1,31 @@
+# https://github.com/marketplace/actions/deploy-to-github-pages
+
+name: Build and Deploy
+on: [push]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+
+      - name: Docker
+        run: |
+          mkdir -p dist/
+          docker build -t h264bitstream-wasm .
+          docker create -ti --name h264bitstream-wasm-container h264bitstream-wasm
+          docker cp h264bitstream-wasm-container:/build/dist/ .
+          docker rm -fv h264bitstream-wasm-container
+
+      - name: Install and Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.2.1
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: dist # The folder the action should deploy.
